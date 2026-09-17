@@ -832,8 +832,9 @@ MANDATORY RULES:
 8. Correct every proper noun / official name / acronym.
 9. Keep lowercase ordinary prose and no period at the end of paragraphs.
 10. Carousel copy must match the corrected post and the same factual standard.
-11. Provocative posts may challenge assumptions, but must not become ragebait or universal claims unsupported by experience.
-12. Preserve "provocative" and "experience_anchor" fields.
+11. The carousel MUST contain 5 to 8 slides. Never return fewer than 5 slides.
+12. Provocative posts may challenge assumptions, but must not become ragebait or universal claims unsupported by experience.
+13. Preserve "provocative" and "experience_anchor" fields.
 
 Return VALID JSON ONLY:
 {{
@@ -915,6 +916,163 @@ Return VALID JSON ONLY:
                 continue
 
     raise RuntimeError(f"Fact-check failed; draft was not sent to Buffer. Last error: {last_error}")
+
+def _fallback_carousel(candidate):
+    """Last-resort carousel built only from the already fact-checked post text."""
+    text = (candidate.get("text") or "").strip()
+    topic = (candidate.get("topic") or "project management note").strip()
+
+    paragraphs = [p.strip() for p in re.split(r"\n\s*\n", text) if p.strip()]
+    if len(paragraphs) < 4:
+        sentences = [x.strip() for x in re.split(r"(?<=[.!?])\s+", re.sub(r"\s+", " ", text)) if x.strip()]
+        if len(sentences) > len(paragraphs):
+            paragraphs = sentences
+
+    chunks = []
+    for p in paragraphs:
+        if len(p) <= 420:
+            chunks.append(p)
+        else:
+            words = p.split()
+            current = []
+            for w in words:
+                current.append(w)
+                if len(" ".join(current)) >= 300:
+                    chunks.append(" ".join(current))
+                    current = []
+            if current:
+                chunks.append(" ".join(current))
+
+    if not chunks:
+        chunks = [text or topic]
+
+    def short_headline(value, fallback):
+        words = re.sub(r"\s+", " ", value).strip().split()
+        if not words:
+            return fallback
+        return " ".join(words[:8]).upper()
+
+    slides = [{
+        "label": "pm notes",
+        "headline": short_headline(topic, "PM NOTES"),
+        "body": chunks[0][:360],
+    }]
+
+    for chunk in chunks[1:6]:
+        slides.append({
+            "label": "pm notes",
+            "headline": short_headline(chunk, "THE POINT"),
+            "body": chunk[:420],
+        })
+
+    while len(slides) < 5:
+        idx = len(slides) % len(chunks)
+        chunk = chunks[idx]
+        slides.append({
+            "label": "pm notes",
+            "headline": short_headline(chunk, "THE POINT"),
+            "body": chunk[:420],
+        })
+
+    return slides[:8]
+
+
+def ensure_carousel(candidate):
+    """Repair an incomplete carousel instead of failing the entire workflow."""
+    slides = candidate.get("carousel", {}).get("slides", [])
+    if 5 <= len(slides) <= 8:
+        return candidate
+
+    print(f"Carousel incomplete ({len(slides)} slide(s)). Repairing it...")
+
+    prompt = f"""
+You are repairing ONLY the carousel for an already fact-checked LinkedIn post.
+
+POST:
+{candidate.get('text', '')}
+
+TOPIC:
+{candidate.get('topic', '')}
+
+EXPERIENCE ANCHORS:
+{json.dumps(candidate.get('experience_anchor', []), ensure_ascii=False)}
+
+STRICT RULES:
+- return 5 to 8 slides, never fewer than 5
+- do not add any new facts, numbers, dates, names, claims or outcomes that are not already present in the post
+- the carousel must simply explain or sharpen the existing post
+- use normal capitalization for proper nouns and acronyms: Jira, LinkedIn, AI, PM, API, SQL, CRM, QA, names, companies and products
+- ordinary supporting copy may begin lowercase
+- no em dash —; use en dash – if needed
+- no periods at the end of slide body copy
+- visual identity: editorial, minimal, huge Anton-style uppercase headline, thin sans-serif body, bright flat colors
+- slide 1 must work as a strong cover
+- final slide should land the idea, not add a generic CTA
+
+Return VALID JSON ONLY:
+{{
+  "slides": [
+    {{"label":"pm notes","headline":"SHORT HEADLINE","body":"supporting copy"}}
+  ]
+}}
+"""
+
+    models = [
+        "gemini-3.5-flash-lite",
+        "gemini-3.1-flash-lite",
+        "gemini-2.5-flash-lite",
+        "gemini-3.5-flash",
+    ]
+
+    for model in models:
+        for attempt in range(2):
+            try:
+                r = requests.post(
+                    f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
+                    headers={
+                        "x-goog-api-key": GEMINI_KEY,
+                        "Content-Type": "application/json",
+                    },
+                    json={
+                        "contents": [{"parts": [{"text": prompt}]}],
+                        "generationConfig": {
+                            "responseMimeType": "application/json",
+                            "temperature": 0.3,
+                        },
+                    },
+                    timeout=180,
+                )
+            except requests.RequestException as e:
+                print(f"Carousel repair network error with {model}: {e}")
+                time.sleep(5 * (attempt + 1))
+                continue
+
+            if r.status_code in [429, 500, 502, 503, 504]:
+                print(f"Carousel repair temporary error {r.status_code} with {model}")
+                time.sleep(5 * (attempt + 1))
+                continue
+            if r.status_code == 404:
+                break
+            r.raise_for_status()
+
+            try:
+                raw = r.json()["candidates"][0]["content"]["parts"][0]["text"]
+                data = json.loads(raw)
+                repaired = data.get("slides", [])[:8]
+                if len(repaired) >= 5:
+                    candidate.setdefault("carousel", {})["slides"] = repaired
+                    print(f"Carousel repaired with {model}: {len(repaired)} slides")
+                    return candidate
+            except Exception as e:
+                print(f"Carousel repair parse error with {model}: {e}")
+                time.sleep(3)
+
+    # Never kill the whole run just because the carousel model misbehaved.
+    fallback = _fallback_carousel(candidate)
+    candidate.setdefault("carousel", {})["slides"] = fallback
+    print(f"Carousel repair fell back to deterministic layout: {len(fallback)} slides")
+    return candidate
+
 
 def git_publish_generated():
     subprocess.run(["git", "config", "user.name", "github-actions[bot]"], check=True)
@@ -1006,11 +1164,10 @@ def main():
 
     rendered = []
     for p_idx, post in enumerate(posts, start=1):
+        post = ensure_carousel(post)
         post_dir = run_dir / f"post_{p_idx:02d}"
         post_dir.mkdir(parents=True, exist_ok=True)
         slides = post.get("carousel", {}).get("slides", [])[:8]
-        if len(slides) < 2:
-            raise RuntimeError("carousel needs at least 2 slides")
         slides[-1]["signature"] = True
 
         paths = []
