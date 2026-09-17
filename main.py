@@ -73,7 +73,7 @@ data = buffer(f"""
 query {{
   channels(input: {{organizationId: "{org_id}"}}) {{
     id
-    displayName
+    Name
     service
   }}
 }}
