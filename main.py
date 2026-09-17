@@ -40,17 +40,23 @@ INTER_URL = "https://raw.githubusercontent.com/google/fonts/main/ofl/inter/Inter
 STYLE = """
 You write LinkedIn posts for Matvei Shakhurdin.
 
-VOICE:
+VOICE AND CAPITALIZATION:
 - English
-- lowercase by default, including "i"
-- proper nouns keep correct capitalization: Jira, Scrum, Agile, Toyota, Telegram, Google, Tbilisi etc
-- never capitalize a sentence only because it starts a paragraph
+- lowercase by default for ordinary words, including "i"
+- BUT always use normal capitalization for anything that should be capitalized in English:
+  people's names, surnames, cities, countries, companies, products, frameworks,
+  official names, acronyms, days/months when used, and branded spellings
+- examples that MUST keep their normal capitalization when relevant:
+  Matvei Shakhurdin, LinkedIn, OpenAI, Google, GitHub, Jira, Scrum, Agile, Kanban,
+  Toyota, Telegram, Tbilisi, AI, PM, API, SQL, CRM, QA
+- do not lowercase a proper noun just to preserve the visual style
+- do not capitalize an ordinary sentence merely because it starts a paragraph
 - no period at the end of paragraphs
 - never use an em dash —
-- use an en dash – when needed
+- use an en dash – when a dash is actually needed
 - natural spoken rhythm, not telegram-style fragments
 - occasional emojis are fine as punchlines, not decoration
-- dry humor, absurd comparisons, slightly unhinged metaphors are welcome
+- dry humor, absurd comparisons and slightly unhinged metaphors are welcome
 - smart and practical underneath the joke
 - no LinkedIn guru voice
 - no corporate bullshit
@@ -75,6 +81,25 @@ His real background includes design and creative production, web development,
 marketing, fintech, designers, developers, stakeholder communication,
 team workload, limited resources, process setup and automation.
 
+CONTENT POSITIONING GOAL:
+The feed should make an experienced hiring manager think:
+"this person understands how delivery actually works"
+without Matvei sounding like he is begging for a job.
+
+Good expertise signals include:
+- turning vague stakeholder asks into workable scope
+- prioritization and trade-offs under limited time / people / budget
+- resource and workload planning
+- delivery risk, dependencies, escalation and expectation management
+- QA and release discipline
+- cross-functional work between design, development, marketing and business
+- process design that removes friction instead of adding ceremony
+- practical AI / automation for PM work
+- retrospectives, failure modes and what a PM would change next time
+- product thinking from an agency / delivery background
+- communicating difficult constraints clearly without creating drama
+
+Prefer specific operational insights, trade-offs and anti-patterns over textbook definitions.
 Never invent employers, numbers, results, team sizes or personal stories.
 """
 
@@ -105,6 +130,21 @@ https://global.toyota/en/company/vision-and-philosophy/production-system/
 
 Never invent history, studies, percentages or statistics.
 If a claim is not supported by supplied evidence, remove it.
+"""
+
+BLOCKED_OR_ALREADY_USED_TOPICS = """
+Do NOT create another post whose main topic is any of the following:
+- what is Scrum vs what is Agile
+- the history of Agile / the Snowbird meeting as the main story
+- where Kanban came from / Toyota as the main story
+- "a project manager is a parent to projects"
+- LOW CORTISOL MANAGEMENT
+- every project plan needs a backflip
+- Jira deadline alerts sent to Telegram
+- automated creative file specification checking
+
+These themes may be mentioned in passing only if they are necessary to a genuinely new idea.
+The new post must have a materially different thesis, hook and takeaway.
 """
 
 def download(url, path):
@@ -334,11 +374,71 @@ def get_linkedin():
     )
     return linkedin["id"]
 
-def make_prompt(trends):
+
+def get_recent_buffer_posts(limit=50):
+    """Best-effort semantic history for topic deduplication. Never break the workflow if Buffer changes this query."""
+    try:
+        data = buffer_request("""
+        query {
+          account {
+            organizations { id name }
+          }
+        }
+        """)
+        org = data["account"]["organizations"][0]
+
+        channels_data = buffer_request(
+            """
+            query GetChannels($organizationId: OrganizationId!) {
+              channels(input: {organizationId: $organizationId}) {
+                id name service
+              }
+            }
+            """,
+            {"organizationId": org["id"]},
+        )
+        linkedin = next(
+            c for c in channels_data["channels"]
+            if str(c["service"]).lower() == "linkedin"
+        )
+
+        posts_data = buffer_request(
+            """
+            query RecentPosts($organizationId: OrganizationId!, $channelId: ChannelId!) {
+              posts(
+                first: 50
+                input: {
+                  organizationId: $organizationId
+                  filter: {
+                    status: [draft, scheduled, sent]
+                    channelIds: [$channelId]
+                  }
+                  sort: [{field: createdAt, direction: desc}]
+                }
+              ) {
+                edges { node { text } }
+              }
+            }
+            """,
+            {"organizationId": org["id"], "channelId": linkedin["id"]},
+        )
+        texts = [
+            edge["node"].get("text", "").strip()
+            for edge in posts_data.get("posts", {}).get("edges", [])
+            if edge.get("node", {}).get("text")
+        ]
+        return texts[:limit]
+    except Exception as e:
+        print("Could not read recent Buffer posts for dedupe:", e)
+        return []
+
+def make_prompt(trends, previous_posts):
     trend_text = "\n\n".join(
         f"SOURCE: {x['source']}\nTITLE: {x['title']}\nURL: {x['url']}\nDESCRIPTION: {x['description']}"
         for x in trends
     )
+
+    history_text = "\n\n--- PREVIOUS POST ---\n".join(previous_posts[:40])
 
     return f"""
 {STYLE}
@@ -347,30 +447,51 @@ def make_prompt(trends):
 
 {PM_FACTS}
 
+{BLOCKED_OR_ALREADY_USED_TOPICS}
+
 Create exactly {DRAFT_COUNT} different LinkedIn post candidates.
 
-MIX:
-- about half: evergreen PM fundamentals, but with a surprising angle, history,
-  analogy, misconception or sharp practical observation
-- one practical post: automation, delivery, processes, Jira, workload,
-  stakeholders, creative/dev teams, QA or planning
-- up to one trend-based post if a fresh trend has a genuinely good PM/work angle
+CONTENT MIX:
+- 2 candidates: genuinely interesting project-management topics that demonstrate senior delivery judgment
+- 1 candidate: practical operations / automation / AI / process design
+- 1 candidate: trend-aware, but only if the trend creates a real PM/work insight; otherwise make another strong PM post
 
-A trend is raw material, not the whole post.
-Do not chase trends for the sake of it.
+TOPIC RULES:
+- do NOT repeat the thesis, hook, metaphor or conclusion of any recent Buffer post shown below
+- do NOT revisit blocked topics above as the main idea
+- avoid textbook explainers unless there is a surprising misconception, historical twist or practical contradiction
+- prioritize topics that reveal judgment: trade-offs, prioritization, scope, risk, resources, stakeholder dynamics,
+  QA, dependencies, decision-making, process design, delivery systems, product thinking, AI-assisted PM work
+- a hiring manager should learn something about how Matvei thinks and works from the post
+- the post should still be enjoyable even for someone who is not hiring
 
-FACT CHECK:
-- use only the verified PM facts above or facts explicitly present in the trend evidence
-- do not turn a headline into invented detail
-- no made-up statistics, research, quotes or company announcements
-- when evidence is weak, remove the claim
+FACT-CHECK RULES — MANDATORY:
+- every factual claim must be supported by the VERIFIED FACT BASE or by the TREND EVIDENCE supplied below
+- a title/headline alone does not justify inventing details behind it
+- if a claim cannot be supported from the supplied evidence, remove it or rewrite it as clearly subjective opinion
+- never invent studies, statistics, dates, quotes, company announcements, product capabilities or historical details
+- never create a source URL that was not supplied
+- when using a trend, source URLs must point to the evidence actually used
+- when using only personal reasoning / PM opinion with no factual external claim, sources may be an empty list
+- separate facts from interpretations: factual language must be supportable; opinions can be framed as opinions
+
+CAPITALIZATION CHECK BEFORE RETURNING:
+- ordinary prose stays lowercase by default
+- proper nouns and official names keep standard capitalization
+- examples: LinkedIn, OpenAI, GitHub, Jira, Scrum, Agile, Kanban, Toyota, Telegram, Tbilisi, Matvei Shakhurdin
+- acronyms stay uppercase: AI, PM, API, SQL, CRM, QA
+- never output "linkedin", "jira", "scrum", "agile", "toyota", "tbilisi" etc when they refer to the proper noun
 
 QUALITY:
 - every post needs one real thought
 - reject anything that sounds like generic PM influencer content
 - interesting > comprehensive
 - specific > motivational
+- useful tension / contradiction / trade-off is better than a generic lesson
 - no AI-slop phrases
+
+RECENT BUFFER POSTS — DO NOT REPEAT:
+{history_text if history_text else "No readable Buffer history available. Use the blocked list above."}
 
 CAROUSEL:
 For every post create 5–8 slides.
@@ -385,6 +506,7 @@ The carousel should feel like Matvei's existing visual identity:
 - one idea per slide
 - headlines short, preferably under 8 words
 - body ideally under 35 words
+- proper nouns and acronyms must still be correctly capitalized in body copy
 - do not invent screenshots or fake interfaces
 - if a real screenshot would be required, explain the idea with typography instead
 
@@ -398,14 +520,14 @@ Return VALID JSON ONLY:
 {{
   "posts": [
     {{
-      "category": "pm_basics | practical | trend",
+      "category": "pm_expertise | practical | trend",
       "topic": "internal topic",
       "text": "finished LinkedIn post",
       "sources": ["actual URLs used"],
       "carousel": {{
         "slides": [
           {{
-            "label": "pm basics or another tiny label",
+            "label": "pm notes or another tiny label",
             "headline": "SHORT HEADLINE",
             "body": "optional supporting copy"
           }}
@@ -498,6 +620,107 @@ def generate_candidates(prompt):
 
     raise RuntimeError(f"Gemini failed on all free models. Last error: {last_error}")
 
+
+def fact_check_candidate(candidate, trends):
+    """Second-pass verifier. It may correct or reject unsupported claims before anything reaches Buffer."""
+    trend_text = "\n\n".join(
+        f"SOURCE: {x['source']}\nTITLE: {x['title']}\nURL: {x['url']}\nDESCRIPTION: {x['description']}"
+        for x in trends
+    )
+
+    prompt = f"""
+You are a strict fact-checker and copy editor.
+
+{PM_FACTS}
+
+CAPITALIZATION POLICY:
+- ordinary prose may begin lowercase
+- proper nouns, official names and acronyms MUST use standard capitalization
+- examples: LinkedIn, OpenAI, GitHub, Jira, Scrum, Agile, Kanban, Toyota, Telegram, Tbilisi, Matvei Shakhurdin, AI, PM, API, SQL, CRM, QA
+
+TREND EVIDENCE:
+{trend_text}
+
+CANDIDATE JSON:
+{json.dumps(candidate, ensure_ascii=False)}
+
+Do a claim-by-claim check.
+Rules:
+1. A factual claim is allowed only if supported by the verified PM facts above or by the supplied trend evidence.
+2. If unsupported, remove it, soften it into clearly subjective opinion, or rewrite around it.
+3. Do not invent replacement facts.
+4. Keep Matvei's tone of voice and lowercase ordinary prose.
+5. Correct capitalization of every proper noun / official name / acronym.
+6. Do not reintroduce a period at the end of paragraphs.
+7. Keep the same general topic unless the entire topic depends on unsupported facts.
+8. Carousel copy must match the corrected post and follow the same factual standard.
+
+Return VALID JSON ONLY in this shape:
+{{
+  "approved": true,
+  "issues": ["short description of anything corrected"],
+  "candidate": {{
+    "category": "...",
+    "topic": "...",
+    "text": "corrected final post",
+    "sources": ["only supplied URLs actually used"],
+    "carousel": {{"slides": [{{"label":"...","headline":"...","body":"..."}}]}}
+  }}
+}}
+"""
+
+    models = [
+        "gemini-3.5-flash",
+        "gemini-3.5-flash-lite",
+        "gemini-3.1-flash-lite",
+        "gemini-2.5-flash-lite",
+    ]
+
+    last_error = None
+    for model in models:
+        for attempt in range(2):
+            try:
+                r = requests.post(
+                    f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
+                    headers={
+                        "x-goog-api-key": GEMINI_KEY,
+                        "Content-Type": "application/json",
+                    },
+                    json={
+                        "contents": [{"parts": [{"text": prompt}]}],
+                        "generationConfig": {"responseMimeType": "application/json"},
+                    },
+                    timeout=180,
+                )
+            except requests.RequestException as e:
+                last_error = e
+                time.sleep(10 * (attempt + 1))
+                continue
+
+            if r.status_code in [429, 500, 502, 503, 504]:
+                last_error = RuntimeError(f"fact-check {model} returned {r.status_code}")
+                time.sleep(10 * (attempt + 1))
+                continue
+            if r.status_code == 404:
+                break
+            r.raise_for_status()
+
+            try:
+                raw = r.json()["candidates"][0]["content"]["parts"][0]["text"]
+                checked = json.loads(raw)
+                corrected = checked.get("candidate")
+                if corrected and corrected.get("text"):
+                    if checked.get("issues"):
+                        print("FACT-CHECK CORRECTIONS:", checked.get("issues"))
+                    return corrected
+            except Exception as e:
+                last_error = e
+                time.sleep(5)
+                continue
+
+    # Safer failure mode: do not publish an unverified candidate.
+    raise RuntimeError(f"Fact-check failed; draft was not sent to Buffer. Last error: {last_error}")
+
 def git_publish_generated():
     subprocess.run(["git", "config", "user.name", "github-actions[bot]"], check=True)
     subprocess.run(
@@ -572,7 +795,15 @@ def main():
 
     channel_id = get_linkedin()
     trends = collect_trends()
-    posts = generate_candidates(make_prompt(trends))
+    previous_posts = get_recent_buffer_posts()
+    posts = generate_candidates(make_prompt(trends, previous_posts))
+
+    print("Running mandatory fact-check + capitalization pass...")
+    checked_posts = []
+    for idx, post in enumerate(posts, start=1):
+        print(f"Fact-checking candidate {idx}/{len(posts)}")
+        checked_posts.append(fact_check_candidate(post, trends))
+    posts = checked_posts
 
     run_id = os.getenv("GITHUB_RUN_ID", str(int(time.time())))
     run_dir = ROOT / "generated" / run_id
