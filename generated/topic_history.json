@@ -41,5 +41,48 @@
       "A6"
     ],
     "provocative": false
+  },
+  {
+    "run_id": "35234826201",
+    "created_at": "2026-09-17T14:41:43Z",
+    "lane_id": "overrun_early",
+    "topic": "project economics and weekly overrun tracking",
+    "anchors": [
+      "A5"
+    ],
+    "provocative": true
+  },
+  {
+    "run_id": "35234826201",
+    "created_at": "2026-09-17T14:41:43Z",
+    "lane_id": "decision_rights",
+    "topic": "decision ownership as part of scope definition",
+    "anchors": [
+      "A1",
+      "A8"
+    ],
+    "provocative": true
+  },
+  {
+    "run_id": "35234826201",
+    "created_at": "2026-09-17T14:41:43Z",
+    "lane_id": "stakeholder_turnover",
+    "topic": "process as continuity during stakeholder turnover",
+    "anchors": [
+      "A10"
+    ],
+    "provocative": false
+  },
+  {
+    "run_id": "35234826201",
+    "created_at": "2026-09-17T14:41:43Z",
+    "lane_id": "handoff_debt",
+    "topic": "reducing delivery debt across cross-functional handoffs",
+    "anchors": [
+      "A3",
+      "A7",
+      "A8"
+    ],
+    "provocative": false
   }
 ]
