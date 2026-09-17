@@ -3,6 +3,7 @@ import os
 import json
 import re
 import time
+import random
 import html
 import requests
 import subprocess
@@ -207,6 +208,193 @@ VALID_ANCHORS = {
     "A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9",
     "A10", "A11", "A12", "A13", "A14", "A15", "A16", "A17"
 }
+
+
+# A deliberately broad editorial map. Python picks the lanes BEFORE Gemini writes,
+# so the model cannot keep falling back to the same stakeholder/automation themes.
+# Each lane is tied to verified experience anchors above.
+TOPIC_LANES = [
+    # ambiguity / scoping
+    {"id":"brief_to_plan", "domain":"scoping", "title":"turning a one-line request into a delivery plan", "anchors":["A1"], "angle":"what has to become explicit before work can actually start"},
+    {"id":"decision_rights", "domain":"scoping", "title":"decision ownership is part of scope", "anchors":["A1","A8"], "angle":"a timeline is weak when nobody knows who can make which decision"},
+    {"id":"brief_quality", "domain":"scoping", "title":"a brief is not a requirement set", "anchors":["A1","A6"], "angle":"how discovery converts intent into something specialists can estimate"},
+    {"id":"scope_boundary", "domain":"scoping", "title":"good scope is partly a list of what is not included", "anchors":["A1","A5"], "angle":"negative space in scope prevents expensive ambiguity"},
+    {"id":"unknowns_before_dates", "domain":"scoping", "title":"name the unknowns before promising the date", "anchors":["A1","A6"], "angle":"risk points are more useful than decorative certainty"},
+
+    # estimation / planning
+    {"id":"estimate_with_specialists", "domain":"estimation", "title":"PMs should not estimate specialist work for specialists", "anchors":["A1","A6","A7"], "angle":"the PM owns the estimation process, not every number"},
+    {"id":"challenge_estimates", "domain":"estimation", "title":"challenging an estimate is not the same as cutting it", "anchors":["A6"], "angle":"technical literacy lets a PM ask better questions without pretending to be an engineer"},
+    {"id":"confidence_ranges", "domain":"estimation", "title":"early estimates should expose confidence, not fake precision", "anchors":["A1","A6"], "angle":"what to do when the work is still partially unknown"},
+    {"id":"timeline_risk_points", "domain":"estimation", "title":"a timeline should show where it can break", "anchors":["A1","A8"], "angle":"named risk points make a plan operational rather than decorative"},
+
+    # project economics / commercial
+    {"id":"sold_hours", "domain":"commercial", "title":"sold hours are a delivery constraint, not an accounting detail", "anchors":["A5"], "angle":"why economics needs to be visible during delivery, not after it"},
+    {"id":"overrun_early", "domain":"commercial", "title":"an overrun discovered at delivery is already old news", "anchors":["A5"], "angle":"why weekly project economics creates options while there is still time"},
+    {"id":"change_request_evidence", "domain":"commercial", "title":"a change request is an evidence problem before it is a negotiation problem", "anchors":["A5","A12"], "angle":"documenting how scope changed before asking for more budget"},
+    {"id":"scope_vs_goodwill", "domain":"commercial", "title":"good client service does not mean absorbing unlimited scope", "anchors":["A5","A12"], "angle":"protecting the relationship and the economics at the same time"},
+    {"id":"negotiation_rounds", "domain":"commercial", "title":"commercial negotiation is part of delivery", "anchors":["A12"], "angle":"why PM judgment continues after the estimate is approved"},
+    {"id":"budget_is_design_constraint", "domain":"commercial", "title":"budget behaves like a design constraint", "anchors":["A5","A7"], "angle":"constraints can improve prioritization if they are visible early"},
+
+    # portfolio / capacity
+    {"id":"parallel_projects", "domain":"portfolio", "title":"six projects cannot all be priority one", "anchors":["A2","A9"], "angle":"portfolio triage when several projects compete for the same people"},
+    {"id":"shared_specialists", "domain":"portfolio", "title":"the real bottleneck is often a shared specialist", "anchors":["A2","A7","A9"], "angle":"resource planning across projects is dependency management between projects"},
+    {"id":"portfolio_visibility", "domain":"portfolio", "title":"a perfect project plan can fail inside a bad portfolio", "anchors":["A2","A9"], "angle":"local optimization breaks when the same team is booked elsewhere"},
+    {"id":"wip_at_portfolio", "domain":"portfolio", "title":"WIP limits matter above the task board too", "anchors":["A2","A9"], "angle":"too many active initiatives create hidden queues between teams"},
+    {"id":"context_switch_cost", "domain":"portfolio", "title":"context switching is a scheduling problem, not a personal discipline problem", "anchors":["A2","A3","A9"], "angle":"how fragmented staffing damages delivery"},
+
+    # dependencies / programs
+    {"id":"dependency_map", "domain":"dependencies", "title":"dependencies deserve their own map", "anchors":["A3","A8"], "angle":"a task list hides the handoffs that actually determine the schedule"},
+    {"id":"approval_chain", "domain":"dependencies", "title":"approval chains are part of the critical path", "anchors":["A8","A10"], "angle":"waiting for a decision is still project time"},
+    {"id":"interlocking_streams", "domain":"dependencies", "title":"program management starts where timelines stop being independent", "anchors":["A8","A10"], "angle":"how separate streams create system-level risk"},
+    {"id":"handoff_debt", "domain":"dependencies", "title":"every handoff creates delivery debt", "anchors":["A3","A7","A8"], "angle":"what gets lost between disciplines and how to reduce it"},
+    {"id":"sequence_before_speed", "domain":"dependencies", "title":"sequencing can matter more than making every team faster", "anchors":["A7","A8"], "angle":"speed in the wrong order creates rework"},
+
+    # design production
+    {"id":"design_disciplines", "domain":"design", "title":"design is not one production queue", "anchors":["A7"], "angle":"2D, identity, UI, motion and 3D have different inputs and dependency patterns"},
+    {"id":"brief_by_discipline", "domain":"design", "title":"one brief format does not fit every creative discipline", "anchors":["A7"], "angle":"briefing specialists in their own working language"},
+    {"id":"creative_review_order", "domain":"design", "title":"review order can create or remove rework", "anchors":["A7","A8"], "angle":"why approvals need to follow production dependencies"},
+    {"id":"creative_pm_quality", "domain":"design", "title":"a PM does not need to design, but needs to understand production", "anchors":["A7"], "angle":"enough craft literacy to sequence work and spot impossible handoffs"},
+    {"id":"motion_depends_on_static", "domain":"design", "title":"downstream creative work should not start on unstable upstream decisions", "anchors":["A7"], "angle":"why freezing the right things at the right moment matters"},
+
+    # engineering / web
+    {"id":"pm_technical_depth", "domain":"engineering", "title":"technical depth for a PM is mostly about asking non-stupid questions", "anchors":["A6"], "angle":"how to discuss scope and estimates directly with developers without cosplay engineering"},
+    {"id":"qa_ownership", "domain":"engineering", "title":"QA is not the last stage of a project", "anchors":["A6"], "angle":"release quality begins when requirements and acceptance logic are defined"},
+    {"id":"requirements_vs_solution", "domain":"engineering", "title":"requirements and implementation are different conversations", "anchors":["A6"], "angle":"keeping the problem stable while allowing engineering choices to evolve"},
+    {"id":"launch_is_not_handover", "domain":"engineering", "title":"launch is a delivery event, not the disappearance of the PM", "anchors":["A6"], "angle":"what end-to-end ownership changes around release"},
+    {"id":"engineering_scope_talk", "domain":"engineering", "title":"scope conversations get better when PMs can talk directly to engineering", "anchors":["A6"], "angle":"reducing translation loss between business request and technical reality"},
+
+    # multi-market / marketing delivery
+    {"id":"multi_market_localization", "domain":"multimarket", "title":"multi-market delivery is not copy-paste with different flags", "anchors":["A4"], "angle":"shared system, local constraints and many parallel content streams"},
+    {"id":"stream_sync", "domain":"multimarket", "title":"social, influencer, paid and content streams do not share one clock", "anchors":["A4"], "angle":"how parallel marketing streams create coordination risk"},
+    {"id":"global_local_tradeoff", "domain":"multimarket", "title":"consistency and local relevance pull in opposite directions", "anchors":["A4"], "angle":"a delivery problem hidden inside a brand problem"},
+    {"id":"campaign_dependency", "domain":"multimarket", "title":"campaign calendars are dependency maps in disguise", "anchors":["A4","A8"], "angle":"how one late approval can move several downstream streams"},
+
+    # stakeholder / governance — deliberately only a few lanes
+    {"id":"stakeholder_count_not_decisions", "domain":"governance", "title":"25 stakeholders do not mean 25 decision-makers", "anchors":["A10"], "angle":"separating participation from decision rights"},
+    {"id":"governance_design", "domain":"governance", "title":"governance is a delivery design problem", "anchors":["A10"], "angle":"who reviews, who decides and when feedback stops"},
+    {"id":"feedback_consolidation", "domain":"governance", "title":"unconsolidated feedback is hidden scope", "anchors":["A10"], "angle":"multiple departments can create conflicting work without changing the brief on paper"},
+
+    # product-like delivery
+    {"id":"agency_product_thinking", "domain":"product", "title":"product thinking can exist inside project delivery", "anchors":["A11"], "angle":"shipping inside a live app changes what good delivery means"},
+    {"id":"two_delivery_orgs", "domain":"product", "title":"one product can have two delivery organizations", "anchors":["A11"], "angle":"coordination when ownership is split across organizational boundaries"},
+    {"id":"usage_after_launch", "domain":"product", "title":"delivery changes when people actually keep using what you ship", "anchors":["A11"], "angle":"what a high-usage WebView project teaches a delivery PM about product consequences"},
+    {"id":"project_to_product_gap", "domain":"product", "title":"the project ends before the product does", "anchors":["A11"], "angle":"where project delivery and product ownership diverge after launch"},
+
+    # long programs / resilience
+    {"id":"year_long_delivery", "domain":"long_programs", "title":"a 12-month plan should be designed to be rewritten", "anchors":["A10"], "angle":"long programs need stable goals and flexible execution"},
+    {"id":"program_memory", "domain":"long_programs", "title":"long projects need institutional memory", "anchors":["A10"], "angle":"keeping decisions and context alive across months and many participants"},
+    {"id":"stakeholder_turnover", "domain":"long_programs", "title":"a long program must survive people changing around it", "anchors":["A10"], "angle":"process as continuity, not bureaucracy"},
+
+    # mentoring / team autonomy
+    {"id":"delegation_ladder", "domain":"mentoring", "title":"delegation should have levels, not a binary switch", "anchors":["A13"], "angle":"moving a Junior PM from assisted execution to independent ownership"},
+    {"id":"pm_autonomy", "domain":"mentoring", "title":"the goal of mentoring is to become unnecessary in the loop", "anchors":["A13"], "angle":"how autonomy changes what the mentor should keep and give away"},
+    {"id":"review_without_takeover", "domain":"mentoring", "title":"reviewing work without taking the work back", "anchors":["A13"], "angle":"the management trap that blocks junior growth"},
+    {"id":"teach_judgment", "domain":"mentoring", "title":"checklists teach process; edge cases teach judgment", "anchors":["A13","A17"], "angle":"why developing a PM means exposing decision logic, not just procedures"},
+
+    # customer discovery
+    {"id":"customer_interviews", "domain":"discovery", "title":"customer discovery is project management before there is a project", "anchors":["A14"], "angle":"structured interviews turning uncertainty into positioning choices"},
+    {"id":"interview_synthesis", "domain":"discovery", "title":"ten interviews are useless if they never change a decision", "anchors":["A14"], "angle":"research only matters when evidence feeds back into positioning"},
+    {"id":"discovery_vs_validation", "domain":"discovery", "title":"customer interviews should be designed to surprise you", "anchors":["A14"], "angle":"avoiding questions that merely validate an existing story"},
+
+    # process / operations
+    {"id":"process_theatre", "domain":"process", "title":"process is only useful when it removes a recurring decision or failure", "anchors":["A1","A8","A15"], "angle":"distinguishing operational structure from ceremony"},
+    {"id":"single_source_truth", "domain":"process", "title":"a source of truth is useless if nobody trusts the update path", "anchors":["A2","A8"], "angle":"information architecture is part of delivery"},
+    {"id":"rituals_have_cost", "domain":"process", "title":"every project ritual should earn its calendar slot", "anchors":["A2","A8"], "angle":"ceremony has a cost and should solve a concrete coordination problem"},
+    {"id":"handover_quality", "domain":"process", "title":"handover quality is a test of whether the project was actually structured", "anchors":["A6","A9"], "angle":"clean closure reveals the quality of decisions and documentation upstream"},
+
+    # automation / AI — capped by selector to max one per batch
+    {"id":"rules_vs_llm", "domain":"automation", "title":"rules should decide; LLMs should phrase", "anchors":["A16"], "angle":"why deterministic business logic is safer than model judgment for operational automation"},
+    {"id":"automation_failure", "domain":"automation", "title":"the useful part of AI automation starts when it fails", "anchors":["A17"], "angle":"moving validation out of the prompt after a junk task name reached client-facing output"},
+    {"id":"automation_test_cases", "domain":"automation", "title":"automations need QA like products do", "anchors":["A15","A17"], "angle":"normal, edge and failure cases for PM workflows"},
+    {"id":"automate_checks_not_judgment", "domain":"automation", "title":"automate repeated checks before automating judgment", "anchors":["A15","A16"], "angle":"a practical boundary for safe PM automation"},
+    {"id":"intake_validation", "domain":"automation", "title":"bad input should fail early", "anchors":["A15","A17"], "angle":"why intake validation is more valuable than polishing bad downstream output"},
+]
+
+TOPIC_HISTORY_PATH = ROOT / "generated" / "topic_history.json"
+TOPIC_COOLDOWN = 44  # last 44 generated lanes cannot be selected again
+
+
+def load_topic_history():
+    try:
+        if TOPIC_HISTORY_PATH.exists():
+            data = json.loads(TOPIC_HISTORY_PATH.read_text(encoding="utf-8"))
+            return data if isinstance(data, list) else []
+    except Exception as e:
+        print("Could not read persistent topic history:", e)
+    return []
+
+
+def choose_topic_lanes(history):
+    """Choose four lanes with hard diversity before the model sees the prompt."""
+    recent_ids = [x.get("lane_id") for x in history[-TOPIC_COOLDOWN:] if x.get("lane_id")]
+    blocked = set(recent_ids)
+    available = [x for x in TOPIC_LANES if x["id"] not in blocked]
+
+    # If the catalog is eventually exhausted, release only the oldest cooldown entries.
+    if len(available) < DRAFT_COUNT:
+        blocked = set(recent_ids[-24:])
+        available = [x for x in TOPIC_LANES if x["id"] not in blocked]
+
+    rng = random.SystemRandom()
+    rng.shuffle(available)
+
+    selected = []
+    used_domains = set()
+    automation_count = 0
+
+    # First pass: one lane per domain, max one automation topic.
+    for lane in available:
+        if lane["domain"] in used_domains:
+            continue
+        if lane["domain"] == "automation" and automation_count >= 1:
+            continue
+        selected.append(lane)
+        used_domains.add(lane["domain"])
+        automation_count += int(lane["domain"] == "automation")
+        if len(selected) == DRAFT_COUNT:
+            break
+
+    # Emergency fill, still never duplicate a lane.
+    if len(selected) < DRAFT_COUNT:
+        for lane in available:
+            if lane in selected:
+                continue
+            if lane["domain"] == "automation" and automation_count >= 1:
+                continue
+            selected.append(lane)
+            automation_count += int(lane["domain"] == "automation")
+            if len(selected) == DRAFT_COUNT:
+                break
+
+    if len(selected) != DRAFT_COUNT:
+        raise RuntimeError("Not enough unused topic lanes available")
+
+    print("SELECTED TOPIC LANES:")
+    for i, lane in enumerate(selected, 1):
+        print(f"  {i}. [{lane['domain']}] {lane['id']} — {lane['title']}")
+    return selected
+
+
+def save_topic_history(posts):
+    """Persist generated themes in the repo, so deleting a Buffer draft does not erase memory."""
+    TOPIC_HISTORY_PATH.parent.mkdir(parents=True, exist_ok=True)
+    history = load_topic_history()
+    run_id = os.getenv("GITHUB_RUN_ID", str(int(time.time())))
+    stamp = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    for post in posts:
+        history.append({
+            "run_id": run_id,
+            "created_at": stamp,
+            "lane_id": post.get("topic_lane", ""),
+            "topic": post.get("topic", ""),
+            "anchors": post.get("experience_anchor", []),
+            "provocative": bool(post.get("provocative")),
+        })
+    # Enough history for a long cooldown, without growing forever.
+    TOPIC_HISTORY_PATH.write_text(
+        json.dumps(history[-240:], ensure_ascii=False, indent=2),
+        encoding="utf-8"
+    )
 
 
 def download(url, path):
@@ -494,13 +682,21 @@ def get_recent_buffer_posts(limit=50):
         print("Could not read recent Buffer posts for dedupe:", e)
         return []
 
-def make_prompt(trends, previous_posts):
+def make_prompt(trends, previous_posts, selected_lanes, topic_history):
     trend_text = "\n\n".join(
         f"SOURCE: {x['source']}\nTITLE: {x['title']}\nURL: {x['url']}\nDESCRIPTION: {x['description']}"
         for x in trends
     )
 
     history_text = "\n\n--- PREVIOUS POST ---\n".join(previous_posts[:40])
+    lane_text = "\n".join(
+        f"POST {i}: lane_id={lane['id']} | domain={lane['domain']} | title={lane['title']} | verified anchors={','.join(lane['anchors'])} | angle={lane['angle']}"
+        for i, lane in enumerate(selected_lanes, start=1)
+    )
+    persistent_history_text = "\n".join(
+        f"- {x.get('lane_id','')}: {x.get('topic','')}"
+        for x in topic_history[-60:]
+    )
 
     return f"""
 {STYLE}
@@ -514,6 +710,18 @@ def make_prompt(trends, previous_posts):
 {BLOCKED_OR_ALREADY_USED_TOPICS}
 
 Create exactly {DRAFT_COUNT} different LinkedIn post candidates.
+
+THE FOUR TOPICS HAVE ALREADY BEEN CHOSEN BY CODE. YOU MUST USE THEM EXACTLY:
+{lane_text}
+
+HARD TOPIC RULES:
+- Post 1 must use POST 1 lane above, Post 2 must use POST 2 lane, etc
+- return the exact lane_id in a field called "topic_lane"
+- do not replace a selected lane with stakeholder management, automation, scope control or another familiar fallback
+- the selected lane is the main subject; other PM concepts may appear only as supporting context
+- each post must feel materially different from the other three in subject, problem, hook and takeaway
+- at most ONE post in the batch may be primarily about AI or automation
+- at most ONE post in the batch may be primarily about stakeholders/governance
 
 THIS IS THE MOST IMPORTANT RULE:
 Every candidate must start from ONE OR MORE verified Matvei experience anchors A1–A17 above.
@@ -638,6 +846,11 @@ QUALITY BAR:
 RECENT BUFFER POSTS — DO NOT REPEAT:
 {history_text if history_text else "No readable Buffer history available. Use the blocked list above."}
 
+PERSISTENT GENERATED-TOPIC HISTORY — THIS SURVIVES DELETING BUFFER DRAFTS:
+{persistent_history_text if persistent_history_text else "No persistent topic history yet."}
+
+If a selected topic lane could accidentally recreate a thesis from this history, choose a NEW thesis inside the selected lane. Do not switch lanes.
+
 CAROUSEL:
 For every post create 5–8 slides.
 Visual identity:
@@ -665,6 +878,7 @@ Return VALID JSON ONLY:
   "posts": [
     {{
       "provocative": true,
+      "topic_lane": "exact selected lane_id",
       "experience_anchor": ["A5"],
       "category": "pm_expertise | practical | systems | trend",
       "topic": "internal topic",
@@ -684,7 +898,7 @@ Return VALID JSON ONLY:
 }}
 """
 
-def generate_candidates(prompt):
+def generate_candidates(prompt, selected_lanes):
     # Free-tier first. If one model is temporarily overloaded (503/429),
     # the script waits and automatically tries the next one.
     models = [
@@ -785,6 +999,29 @@ def generate_candidates(prompt):
                     print(last_error)
                     continue
 
+                expected_lanes = [x["id"] for x in selected_lanes]
+                returned_lanes = [p.get("topic_lane") for p in posts]
+                if returned_lanes != expected_lanes:
+                    last_error = RuntimeError(
+                        f"Model ignored required topic lanes. Expected {expected_lanes}, got {returned_lanes}"
+                    )
+                    print(last_error)
+                    continue
+
+                # Also enforce that each selected lane uses only verified compatible anchors.
+                lane_map = {x["id"]: set(x["anchors"]) for x in selected_lanes}
+                bad_lane_anchor = False
+                for p in posts:
+                    used = set(p.get("experience_anchor", []))
+                    allowed = lane_map.get(p.get("topic_lane"), set())
+                    if not used.intersection(allowed):
+                        bad_lane_anchor = True
+                        break
+                if bad_lane_anchor:
+                    last_error = RuntimeError("A post is not grounded in an anchor compatible with its required topic lane")
+                    print(last_error)
+                    continue
+
                 print(f"SUCCESS with {model}: {len(posts)} experience-led posts generated")
                 return posts
 
@@ -834,7 +1071,8 @@ MANDATORY RULES:
 10. Carousel copy must match the corrected post and the same factual standard.
 11. The carousel MUST contain 5 to 8 slides. Never return fewer than 5 slides.
 12. Provocative posts may challenge assumptions, but must not become ragebait or universal claims unsupported by experience.
-13. Preserve "provocative" and "experience_anchor" fields.
+13. Preserve "provocative", "topic_lane" and "experience_anchor" fields exactly.
+14. Do not change the subject into stakeholder management, automation or another familiar PM fallback.
 
 Return VALID JSON ONLY:
 {{
@@ -842,6 +1080,7 @@ Return VALID JSON ONLY:
   "issues": ["short description of anything corrected"],
   "candidate": {{
     "provocative": true,
+    "topic_lane": "exact original lane_id",
     "experience_anchor": ["A5"],
     "category": "...",
     "topic": "...",
@@ -900,6 +1139,7 @@ Return VALID JSON ONLY:
                     print("FACT-CHECK REJECTED:", checked.get("issues"))
                     continue
                 if corrected and corrected.get("text"):
+                    corrected["topic_lane"] = candidate.get("topic_lane", corrected.get("topic_lane", ""))
                     anchors = corrected.get("experience_anchor", [])
                     if isinstance(anchors, str):
                         anchors = [anchors]
@@ -1149,7 +1389,12 @@ def main():
     channel_id = get_linkedin()
     trends = collect_trends()
     previous_posts = get_recent_buffer_posts()
-    posts = generate_candidates(make_prompt(trends, previous_posts))
+    topic_history = load_topic_history()
+    selected_lanes = choose_topic_lanes(topic_history)
+    posts = generate_candidates(
+        make_prompt(trends, previous_posts, selected_lanes, topic_history),
+        selected_lanes
+    )
 
     print("Running mandatory fact-check + capitalization pass...")
     checked_posts = []
@@ -1177,7 +1422,10 @@ def main():
             paths.append(out)
         rendered.append((post, paths))
 
-    # Buffer needs public URLs, so publish the generated PNG files first.
+    # Persist themes independently of Buffer. Deleted drafts must not erase topic memory.
+    save_topic_history([post for post, _ in rendered])
+
+    # Buffer needs public URLs, so publish the generated PNG files + topic history first.
     git_publish_generated()
 
     for post, paths in rendered:
