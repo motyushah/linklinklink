@@ -348,5 +348,66 @@
     "provocative": false,
     "hook_style": "decision",
     "opening": "you have to decide early: are you managing the project as a facilitator of the plan, or are you the sole custodian of the truth"
+  },
+  {
+    "run_id": "35241034190",
+    "created_at": "2026-09-17T15:38:33Z",
+    "lane_id": "client_yes",
+    "topic": "saying yes to a client can be a project risk",
+    "domain": "client_commercial",
+    "bucket": "core",
+    "anchors": [
+      "A5",
+      "A12"
+    ],
+    "provocative": true,
+    "hook_style": "anti_template",
+    "opening": "every time a stakeholder asks to squeeze just one more feature into the current sprint, your first instinct is to nod and protect the relationship"
+  },
+  {
+    "run_id": "35241034190",
+    "created_at": "2026-09-17T15:38:33Z",
+    "lane_id": "close_decisions",
+    "topic": "closure should record what remains intentionally unresolved",
+    "domain": "handover_closure",
+    "bucket": "core",
+    "anchors": [
+      "A10",
+      "A11"
+    ],
+    "provocative": true,
+    "hook_style": "question",
+    "opening": "what happens to all the loose ends when a project crosses the finish line and everyone packs up their laptops?"
+  },
+  {
+    "run_id": "35241034190",
+    "created_at": "2026-09-17T15:38:33Z",
+    "lane_id": "escalation_packet",
+    "topic": "a useful escalation contains context, options and a decision request",
+    "domain": "issues_escalation",
+    "bucket": "core",
+    "anchors": [
+      "A1",
+      "A8"
+    ],
+    "provocative": false,
+    "hook_style": "myth_without_label",
+    "opening": "sending a panicked message that a project is blocked because legal hasn't reviewed the copy is not an escalation – it is just transferring your anxiety to someone else's inbox"
+  },
+  {
+    "run_id": "35241034190",
+    "created_at": "2026-09-17T15:38:33Z",
+    "lane_id": "certainty_theatre",
+    "topic": "false certainty is more dangerous than visible uncertainty",
+    "domain": "uncertainty",
+    "bucket": "core",
+    "anchors": [
+      "A1",
+      "A2",
+      "A9"
+    ],
+    "provocative": false,
+    "hook_style": "direct_claim",
+    "opening": "a fifty-page project plan with color-coded milestones six months out is comforting fiction designed to keep stakeholders from panicking"
   }
 ]
