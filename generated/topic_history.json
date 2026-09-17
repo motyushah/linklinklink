@@ -169,5 +169,69 @@
       "A17"
     ],
     "provocative": false
+  },
+  {
+    "run_id": "35238149924",
+    "created_at": "2026-09-17T15:11:33Z",
+    "lane_id": "report_exception",
+    "topic": "leaders often need exceptions, not the entire task list",
+    "domain": "reporting",
+    "bucket": "core",
+    "anchors": [
+      "A2",
+      "A5",
+      "A8",
+      "A9",
+      "A10"
+    ],
+    "provocative": true
+  },
+  {
+    "run_id": "35238149924",
+    "created_at": "2026-09-17T15:11:33Z",
+    "lane_id": "audience_format",
+    "topic": "the same project truth needs different formats for different audiences",
+    "domain": "communication",
+    "bucket": "core",
+    "anchors": [
+      "A1",
+      "A3",
+      "A8",
+      "A10",
+      "A12"
+    ],
+    "provocative": true
+  },
+  {
+    "run_id": "35238149924",
+    "created_at": "2026-09-17T15:11:33Z",
+    "lane_id": "resource_loading",
+    "topic": "resource plans should show overload before people feel it",
+    "domain": "resource_capacity",
+    "bucket": "core",
+    "anchors": [
+      "A2",
+      "A3",
+      "A7",
+      "A9",
+      "A10"
+    ],
+    "provocative": false
+  },
+  {
+    "run_id": "35238149924",
+    "created_at": "2026-09-17T15:11:33Z",
+    "lane_id": "risk_vs_issue",
+    "topic": "once the thing happened, stop calling it a risk",
+    "domain": "issues_escalation",
+    "bucket": "core",
+    "anchors": [
+      "A1",
+      "A5",
+      "A8",
+      "A10",
+      "A12"
+    ],
+    "provocative": false
   }
 ]
