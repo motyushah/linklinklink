@@ -27,7 +27,7 @@ Return only the finished post.
 
 # 1. Gemini writes the post
 r = requests.post(
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent",
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
     headers={
         "x-goog-api-key": GEMINI_KEY,
         "Content-Type": "application/json"
