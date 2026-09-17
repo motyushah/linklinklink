@@ -185,6 +185,19 @@ https://global.toyota/en/company/vision-and-philosophy/production-system/
 - Kanban cards support a pull system
 - the pull concept was influenced in part by supermarket replenishment
 
+
+PMI Lexicon of Project Management Terms, Version 5.0 —
+https://www.pmi.org/-/media/pmi/documents/registered/pdf/pmbok-standards/pmi-lexicon-pm-terms.pdf
+- a project life cycle is the series of phases a project passes through from start to completion
+- a project charter formally authorizes the existence of a project and provides the PM authority to apply organizational resources
+- project governance is the framework, functions and processes that guide project-management activities toward project objectives
+
+PMI article on risks, issues and changes —
+https://www.pmi.org/learning/library/risks-issues-changes-forms-logs-1078
+- a risk concerns something uncertain in the future
+- an issue concerns something happening in the present that needs resolution
+- a proposed change should be evaluated for impact on budget, schedule, risk and quality
+
 Never invent history, studies, percentages or statistics.
 If a claim is not supported by supplied evidence, remove it.
 """
@@ -213,105 +226,1072 @@ VALID_ANCHORS = {
 # A deliberately broad editorial map. Python picks the lanes BEFORE Gemini writes,
 # so the model cannot keep falling back to the same stakeholder/automation themes.
 # Each lane is tied to verified experience anchors above.
-TOPIC_LANES = [
-    # ambiguity / scoping
-    {"id":"brief_to_plan", "domain":"scoping", "title":"turning a one-line request into a delivery plan", "anchors":["A1"], "angle":"what has to become explicit before work can actually start"},
-    {"id":"decision_rights", "domain":"scoping", "title":"decision ownership is part of scope", "anchors":["A1","A8"], "angle":"a timeline is weak when nobody knows who can make which decision"},
-    {"id":"brief_quality", "domain":"scoping", "title":"a brief is not a requirement set", "anchors":["A1","A6"], "angle":"how discovery converts intent into something specialists can estimate"},
-    {"id":"scope_boundary", "domain":"scoping", "title":"good scope is partly a list of what is not included", "anchors":["A1","A5"], "angle":"negative space in scope prevents expensive ambiguity"},
-    {"id":"unknowns_before_dates", "domain":"scoping", "title":"name the unknowns before promising the date", "anchors":["A1","A6"], "angle":"risk points are more useful than decorative certainty"},
-
-    # estimation / planning
-    {"id":"estimate_with_specialists", "domain":"estimation", "title":"PMs should not estimate specialist work for specialists", "anchors":["A1","A6","A7"], "angle":"the PM owns the estimation process, not every number"},
-    {"id":"challenge_estimates", "domain":"estimation", "title":"challenging an estimate is not the same as cutting it", "anchors":["A6"], "angle":"technical literacy lets a PM ask better questions without pretending to be an engineer"},
-    {"id":"confidence_ranges", "domain":"estimation", "title":"early estimates should expose confidence, not fake precision", "anchors":["A1","A6"], "angle":"what to do when the work is still partially unknown"},
-    {"id":"timeline_risk_points", "domain":"estimation", "title":"a timeline should show where it can break", "anchors":["A1","A8"], "angle":"named risk points make a plan operational rather than decorative"},
-
-    # project economics / commercial
-    {"id":"sold_hours", "domain":"commercial", "title":"sold hours are a delivery constraint, not an accounting detail", "anchors":["A5"], "angle":"why economics needs to be visible during delivery, not after it"},
-    {"id":"overrun_early", "domain":"commercial", "title":"an overrun discovered at delivery is already old news", "anchors":["A5"], "angle":"why weekly project economics creates options while there is still time"},
-    {"id":"change_request_evidence", "domain":"commercial", "title":"a change request is an evidence problem before it is a negotiation problem", "anchors":["A5","A12"], "angle":"documenting how scope changed before asking for more budget"},
-    {"id":"scope_vs_goodwill", "domain":"commercial", "title":"good client service does not mean absorbing unlimited scope", "anchors":["A5","A12"], "angle":"protecting the relationship and the economics at the same time"},
-    {"id":"negotiation_rounds", "domain":"commercial", "title":"commercial negotiation is part of delivery", "anchors":["A12"], "angle":"why PM judgment continues after the estimate is approved"},
-    {"id":"budget_is_design_constraint", "domain":"commercial", "title":"budget behaves like a design constraint", "anchors":["A5","A7"], "angle":"constraints can improve prioritization if they are visible early"},
-
-    # portfolio / capacity
-    {"id":"parallel_projects", "domain":"portfolio", "title":"six projects cannot all be priority one", "anchors":["A2","A9"], "angle":"portfolio triage when several projects compete for the same people"},
-    {"id":"shared_specialists", "domain":"portfolio", "title":"the real bottleneck is often a shared specialist", "anchors":["A2","A7","A9"], "angle":"resource planning across projects is dependency management between projects"},
-    {"id":"portfolio_visibility", "domain":"portfolio", "title":"a perfect project plan can fail inside a bad portfolio", "anchors":["A2","A9"], "angle":"local optimization breaks when the same team is booked elsewhere"},
-    {"id":"wip_at_portfolio", "domain":"portfolio", "title":"WIP limits matter above the task board too", "anchors":["A2","A9"], "angle":"too many active initiatives create hidden queues between teams"},
-    {"id":"context_switch_cost", "domain":"portfolio", "title":"context switching is a scheduling problem, not a personal discipline problem", "anchors":["A2","A3","A9"], "angle":"how fragmented staffing damages delivery"},
-
-    # dependencies / programs
-    {"id":"dependency_map", "domain":"dependencies", "title":"dependencies deserve their own map", "anchors":["A3","A8"], "angle":"a task list hides the handoffs that actually determine the schedule"},
-    {"id":"approval_chain", "domain":"dependencies", "title":"approval chains are part of the critical path", "anchors":["A8","A10"], "angle":"waiting for a decision is still project time"},
-    {"id":"interlocking_streams", "domain":"dependencies", "title":"program management starts where timelines stop being independent", "anchors":["A8","A10"], "angle":"how separate streams create system-level risk"},
-    {"id":"handoff_debt", "domain":"dependencies", "title":"every handoff creates delivery debt", "anchors":["A3","A7","A8"], "angle":"what gets lost between disciplines and how to reduce it"},
-    {"id":"sequence_before_speed", "domain":"dependencies", "title":"sequencing can matter more than making every team faster", "anchors":["A7","A8"], "angle":"speed in the wrong order creates rework"},
-
-    # design production
-    {"id":"design_disciplines", "domain":"design", "title":"design is not one production queue", "anchors":["A7"], "angle":"2D, identity, UI, motion and 3D have different inputs and dependency patterns"},
-    {"id":"brief_by_discipline", "domain":"design", "title":"one brief format does not fit every creative discipline", "anchors":["A7"], "angle":"briefing specialists in their own working language"},
-    {"id":"creative_review_order", "domain":"design", "title":"review order can create or remove rework", "anchors":["A7","A8"], "angle":"why approvals need to follow production dependencies"},
-    {"id":"creative_pm_quality", "domain":"design", "title":"a PM does not need to design, but needs to understand production", "anchors":["A7"], "angle":"enough craft literacy to sequence work and spot impossible handoffs"},
-    {"id":"motion_depends_on_static", "domain":"design", "title":"downstream creative work should not start on unstable upstream decisions", "anchors":["A7"], "angle":"why freezing the right things at the right moment matters"},
-
-    # engineering / web
-    {"id":"pm_technical_depth", "domain":"engineering", "title":"technical depth for a PM is mostly about asking non-stupid questions", "anchors":["A6"], "angle":"how to discuss scope and estimates directly with developers without cosplay engineering"},
-    {"id":"qa_ownership", "domain":"engineering", "title":"QA is not the last stage of a project", "anchors":["A6"], "angle":"release quality begins when requirements and acceptance logic are defined"},
-    {"id":"requirements_vs_solution", "domain":"engineering", "title":"requirements and implementation are different conversations", "anchors":["A6"], "angle":"keeping the problem stable while allowing engineering choices to evolve"},
-    {"id":"launch_is_not_handover", "domain":"engineering", "title":"launch is a delivery event, not the disappearance of the PM", "anchors":["A6"], "angle":"what end-to-end ownership changes around release"},
-    {"id":"engineering_scope_talk", "domain":"engineering", "title":"scope conversations get better when PMs can talk directly to engineering", "anchors":["A6"], "angle":"reducing translation loss between business request and technical reality"},
-
-    # multi-market / marketing delivery
-    {"id":"multi_market_localization", "domain":"multimarket", "title":"multi-market delivery is not copy-paste with different flags", "anchors":["A4"], "angle":"shared system, local constraints and many parallel content streams"},
-    {"id":"stream_sync", "domain":"multimarket", "title":"social, influencer, paid and content streams do not share one clock", "anchors":["A4"], "angle":"how parallel marketing streams create coordination risk"},
-    {"id":"global_local_tradeoff", "domain":"multimarket", "title":"consistency and local relevance pull in opposite directions", "anchors":["A4"], "angle":"a delivery problem hidden inside a brand problem"},
-    {"id":"campaign_dependency", "domain":"multimarket", "title":"campaign calendars are dependency maps in disguise", "anchors":["A4","A8"], "angle":"how one late approval can move several downstream streams"},
-
-    # stakeholder / governance — deliberately only a few lanes
-    {"id":"stakeholder_count_not_decisions", "domain":"governance", "title":"25 stakeholders do not mean 25 decision-makers", "anchors":["A10"], "angle":"separating participation from decision rights"},
-    {"id":"governance_design", "domain":"governance", "title":"governance is a delivery design problem", "anchors":["A10"], "angle":"who reviews, who decides and when feedback stops"},
-    {"id":"feedback_consolidation", "domain":"governance", "title":"unconsolidated feedback is hidden scope", "anchors":["A10"], "angle":"multiple departments can create conflicting work without changing the brief on paper"},
-
-    # product-like delivery
-    {"id":"agency_product_thinking", "domain":"product", "title":"product thinking can exist inside project delivery", "anchors":["A11"], "angle":"shipping inside a live app changes what good delivery means"},
-    {"id":"two_delivery_orgs", "domain":"product", "title":"one product can have two delivery organizations", "anchors":["A11"], "angle":"coordination when ownership is split across organizational boundaries"},
-    {"id":"usage_after_launch", "domain":"product", "title":"delivery changes when people actually keep using what you ship", "anchors":["A11"], "angle":"what a high-usage WebView project teaches a delivery PM about product consequences"},
-    {"id":"project_to_product_gap", "domain":"product", "title":"the project ends before the product does", "anchors":["A11"], "angle":"where project delivery and product ownership diverge after launch"},
-
-    # long programs / resilience
-    {"id":"year_long_delivery", "domain":"long_programs", "title":"a 12-month plan should be designed to be rewritten", "anchors":["A10"], "angle":"long programs need stable goals and flexible execution"},
-    {"id":"program_memory", "domain":"long_programs", "title":"long projects need institutional memory", "anchors":["A10"], "angle":"keeping decisions and context alive across months and many participants"},
-    {"id":"stakeholder_turnover", "domain":"long_programs", "title":"a long program must survive people changing around it", "anchors":["A10"], "angle":"process as continuity, not bureaucracy"},
-
-    # mentoring / team autonomy
-    {"id":"delegation_ladder", "domain":"mentoring", "title":"delegation should have levels, not a binary switch", "anchors":["A13"], "angle":"moving a Junior PM from assisted execution to independent ownership"},
-    {"id":"pm_autonomy", "domain":"mentoring", "title":"the goal of mentoring is to become unnecessary in the loop", "anchors":["A13"], "angle":"how autonomy changes what the mentor should keep and give away"},
-    {"id":"review_without_takeover", "domain":"mentoring", "title":"reviewing work without taking the work back", "anchors":["A13"], "angle":"the management trap that blocks junior growth"},
-    {"id":"teach_judgment", "domain":"mentoring", "title":"checklists teach process; edge cases teach judgment", "anchors":["A13","A17"], "angle":"why developing a PM means exposing decision logic, not just procedures"},
-
-    # customer discovery
-    {"id":"customer_interviews", "domain":"discovery", "title":"customer discovery is project management before there is a project", "anchors":["A14"], "angle":"structured interviews turning uncertainty into positioning choices"},
-    {"id":"interview_synthesis", "domain":"discovery", "title":"ten interviews are useless if they never change a decision", "anchors":["A14"], "angle":"research only matters when evidence feeds back into positioning"},
-    {"id":"discovery_vs_validation", "domain":"discovery", "title":"customer interviews should be designed to surprise you", "anchors":["A14"], "angle":"avoiding questions that merely validate an existing story"},
-
-    # process / operations
-    {"id":"process_theatre", "domain":"process", "title":"process is only useful when it removes a recurring decision or failure", "anchors":["A1","A8","A15"], "angle":"distinguishing operational structure from ceremony"},
-    {"id":"single_source_truth", "domain":"process", "title":"a source of truth is useless if nobody trusts the update path", "anchors":["A2","A8"], "angle":"information architecture is part of delivery"},
-    {"id":"rituals_have_cost", "domain":"process", "title":"every project ritual should earn its calendar slot", "anchors":["A2","A8"], "angle":"ceremony has a cost and should solve a concrete coordination problem"},
-    {"id":"handover_quality", "domain":"process", "title":"handover quality is a test of whether the project was actually structured", "anchors":["A6","A9"], "angle":"clean closure reveals the quality of decisions and documentation upstream"},
-
-    # automation / AI — capped by selector to max one per batch
-    {"id":"rules_vs_llm", "domain":"automation", "title":"rules should decide; LLMs should phrase", "anchors":["A16"], "angle":"why deterministic business logic is safer than model judgment for operational automation"},
-    {"id":"automation_failure", "domain":"automation", "title":"the useful part of AI automation starts when it fails", "anchors":["A17"], "angle":"moving validation out of the prompt after a junk task name reached client-facing output"},
-    {"id":"automation_test_cases", "domain":"automation", "title":"automations need QA like products do", "anchors":["A15","A17"], "angle":"normal, edge and failure cases for PM workflows"},
-    {"id":"automate_checks_not_judgment", "domain":"automation", "title":"automate repeated checks before automating judgment", "anchors":["A15","A16"], "angle":"a practical boundary for safe PM automation"},
-    {"id":"intake_validation", "domain":"automation", "title":"bad input should fail early", "anchors":["A15","A17"], "angle":"why intake validation is more valuable than polishing bad downstream output"},
-]
+TOPIC_LANES = [{'id': 'why_project_exists',
+  'domain': 'initiation',
+  'bucket': 'core',
+  'title': 'before planning, define why the project exists',
+  'anchors': ['A1', 'A8', 'A10'],
+  'angle': 'how a PM turns an incoming request into a reasoned project rather than a task list'},
+ {'id': 'project_charter_lite',
+  'domain': 'initiation',
+  'bucket': 'core',
+  'title': 'most projects need a one-page charter before they need a giant plan',
+  'anchors': ['A1', 'A8', 'A10'],
+  'angle': 'minimum useful alignment: objective, owner, scope, constraints, success, major risks'},
+ {'id': 'kickoff_is_not_start',
+  'domain': 'initiation',
+  'bucket': 'core',
+  'title': 'a kickoff meeting is not the same thing as project initiation',
+  'anchors': ['A1', 'A8', 'A10'],
+  'angle': 'the work that must be settled before the calendar invite'},
+ {'id': 'sponsor_before_schedule',
+  'domain': 'initiation',
+  'bucket': 'core',
+  'title': 'a project without a real sponsor has a hidden governance problem',
+  'anchors': ['A1', 'A8', 'A10'],
+  'angle': 'why authority and backing matter before dates become meaningful'},
+ {'id': 'output_vs_outcome',
+  'domain': 'objectives_success',
+  'bucket': 'core',
+  'title': 'deliverables are not the same as success',
+  'anchors': ['A1', 'A6', 'A10'],
+  'angle': 'a project can ship everything and still miss the reason it existed'},
+ {'id': 'success_criteria_early',
+  'domain': 'objectives_success',
+  'bucket': 'core',
+  'title': 'success criteria are easiest to define before everyone is emotionally attached to the solution',
+  'anchors': ['A1', 'A6', 'A10'],
+  'angle': 'why measurable acceptance should precede execution'},
+ {'id': 'one_sentence_goal',
+  'domain': 'objectives_success',
+  'bucket': 'core',
+  'title': 'if the project goal needs a paragraph, the team will probably execute four different projects',
+  'anchors': ['A1', 'A6', 'A10'],
+  'angle': 'using a simple objective as a filter for trade-offs'},
+ {'id': 'done_means_what',
+  'domain': 'objectives_success',
+  'bucket': 'core',
+  'title': '"done" needs a definition at project level, not only task level',
+  'anchors': ['A1', 'A6', 'A10'],
+  'angle': 'how teams discover too late that delivery and acceptance are different things'},
+ {'id': 'scope_is_boundary',
+  'domain': 'scope',
+  'bucket': 'core',
+  'title': 'scope is a boundary, not a shopping list',
+  'anchors': ['A1', 'A5', 'A12'],
+  'angle': 'the useful part of scope is what it prevents from silently entering'},
+ {'id': 'out_of_scope',
+  'domain': 'scope',
+  'bucket': 'core',
+  'title': 'out-of-scope is one of the most underrated project documents',
+  'anchors': ['A1', 'A5', 'A12'],
+  'angle': 'negative space makes later change conversations less emotional'},
+ {'id': 'scope_before_solution',
+  'domain': 'scope',
+  'bucket': 'core',
+  'title': 'define the problem boundary before falling in love with the solution',
+  'anchors': ['A1', 'A5', 'A12'],
+  'angle': 'keeping intent stable while execution can still change'},
+ {'id': 'scope_drift_small',
+  'domain': 'scope',
+  'bucket': 'core',
+  'title': 'scope rarely explodes in one dramatic moment',
+  'anchors': ['A1', 'A5', 'A12'],
+  'angle': 'how tiny reasonable additions accumulate into a different project'},
+ {'id': 'scope_owner',
+  'domain': 'scope',
+  'bucket': 'core',
+  'title': 'somebody has to own the decision that changes scope',
+  'anchors': ['A1', 'A5', 'A12'],
+  'angle': 'change without decision ownership becomes invisible work'},
+ {'id': 'assumptions_visible',
+  'domain': 'assumptions_constraints',
+  'bucket': 'core',
+  'title': 'assumptions are future arguments unless they are written down',
+  'anchors': ['A1', 'A2', 'A5', 'A10'],
+  'angle': 'turning invisible beliefs into things the team can test'},
+ {'id': 'constraint_not_excuse',
+  'domain': 'assumptions_constraints',
+  'bucket': 'core',
+  'title': 'a constraint is useful when it changes the plan',
+  'anchors': ['A1', 'A2', 'A5', 'A10'],
+  'angle': 'budget, time and people should shape choices rather than appear as excuses later'},
+ {'id': 'unknowns_register',
+  'domain': 'assumptions_constraints',
+  'bucket': 'core',
+  'title': 'unknowns deserve a place next to tasks',
+  'anchors': ['A1', 'A2', 'A5', 'A10'],
+  'angle': 'planning the discovery of information, not pretending it already exists'},
+ {'id': 'constraint_priority',
+  'domain': 'assumptions_constraints',
+  'bucket': 'core',
+  'title': 'when everything is fixed, something is actually not fixed',
+  'anchors': ['A1', 'A2', 'A5', 'A10'],
+  'angle': 'surfacing which constraint will move when reality arrives'},
+ {'id': 'requirement_test',
+  'domain': 'requirements',
+  'bucket': 'core',
+  'title': 'a requirement should survive the question: how will we know this is met?',
+  'anchors': ['A1', 'A6', 'A7'],
+  'angle': 'acceptance logic as a cure for vague requests'},
+ {'id': 'requirements_are_decisions',
+  'domain': 'requirements',
+  'bucket': 'core',
+  'title': 'requirements are accumulated decisions, not notes from a meeting',
+  'anchors': ['A1', 'A6', 'A7'],
+  'angle': 'keeping rationale and ownership with the requirement'},
+ {'id': 'must_should_could',
+  'domain': 'requirements',
+  'bucket': 'core',
+  'title': 'priority words only work if people accept that some things will not ship',
+  'anchors': ['A1', 'A6', 'A7'],
+  'angle': 'forcing real trade-offs instead of decorative labels'},
+ {'id': 'brief_vs_requirements',
+  'domain': 'requirements',
+  'bucket': 'core',
+  'title': 'a brief explains intent; requirements make delivery testable',
+  'anchors': ['A1', 'A6', 'A7'],
+  'angle': 'why both can be necessary without becoming bureaucracy'},
+ {'id': 'estimate_is_not_promise',
+  'domain': 'estimation',
+  'bucket': 'core',
+  'title': 'an estimate is information, not a blood oath',
+  'anchors': ['A1', 'A5', 'A6', 'A7'],
+  'angle': 'how to keep uncertainty visible without making the plan useless'},
+ {'id': 'estimate_inputs',
+  'domain': 'estimation',
+  'bucket': 'core',
+  'title': 'bad estimates often start with bad inputs, not bad specialists',
+  'anchors': ['A1', 'A5', 'A6', 'A7'],
+  'angle': 'what a PM should clarify before asking for a number'},
+ {'id': 'estimate_range',
+  'domain': 'estimation',
+  'bucket': 'core',
+  'title': 'a range can be more honest than a precise number early on',
+  'anchors': ['A1', 'A5', 'A6', 'A7'],
+  'angle': 'communicating uncertainty without giving up accountability'},
+ {'id': 'estimate_review',
+  'domain': 'estimation',
+  'bucket': 'core',
+  'title': 'an estimate should change when the work becomes better understood',
+  'anchors': ['A1', 'A5', 'A6', 'A7'],
+  'angle': 'why re-estimation is not automatically failure'},
+ {'id': 'pm_owns_estimation_process',
+  'domain': 'estimation',
+  'bucket': 'core',
+  'title': 'the PM owns the estimation process, not every estimate',
+  'anchors': ['A1', 'A5', 'A6', 'A7'],
+  'angle': 'getting the right people, assumptions and dependencies into the number'},
+ {'id': 'plan_is_model',
+  'domain': 'planning',
+  'bucket': 'core',
+  'title': 'a project plan is a model of reality, not reality',
+  'anchors': ['A1', 'A2', 'A8', 'A10'],
+  'angle': 'why a plan is useful precisely because it can be updated'},
+ {'id': 'plan_decisions_first',
+  'domain': 'planning',
+  'bucket': 'core',
+  'title': 'plans should capture decisions before decoration',
+  'anchors': ['A1', 'A2', 'A8', 'A10'],
+  'angle': 'owners, sequence and constraints matter more than pretty Gantt bars'},
+ {'id': 'planning_horizon',
+  'domain': 'planning',
+  'bucket': 'core',
+  'title': 'not every part of a project deserves the same level of detail today',
+  'anchors': ['A1', 'A2', 'A8', 'A10'],
+  'angle': 'rolling detail as uncertainty falls'},
+ {'id': 'plan_for_replan',
+  'domain': 'planning',
+  'bucket': 'core',
+  'title': 'replanning is part of planning',
+  'anchors': ['A1', 'A2', 'A8', 'A10'],
+  'angle': 'building a plan that can absorb changed priorities without becoming fiction'},
+ {'id': 'plan_owner',
+  'domain': 'planning',
+  'bucket': 'core',
+  'title': 'if nobody knows who maintains the plan, there is no plan',
+  'anchors': ['A1', 'A2', 'A8', 'A10'],
+  'angle': 'the update path is part of the system'},
+ {'id': 'dates_need_logic',
+  'domain': 'scheduling',
+  'bucket': 'core',
+  'title': 'a date without scheduling logic is just a wish with formatting',
+  'anchors': ['A2', 'A3', 'A8', 'A9'],
+  'angle': 'sequence, effort, availability and dependencies behind a deadline'},
+ {'id': 'calendar_vs_effort',
+  'domain': 'scheduling',
+  'bucket': 'core',
+  'title': 'three days of effort can take three weeks of calendar',
+  'anchors': ['A2', 'A3', 'A8', 'A9'],
+  'angle': 'availability, queues and approvals change elapsed time'},
+ {'id': 'buffer_visibility',
+  'domain': 'scheduling',
+  'bucket': 'core',
+  'title': 'buffers work better when everyone knows what they protect',
+  'anchors': ['A2', 'A3', 'A8', 'A9'],
+  'angle': 'using contingency intentionally instead of hiding padding'},
+ {'id': 'schedule_compression',
+  'domain': 'scheduling',
+  'bucket': 'core',
+  'title': 'making the date earlier does not make the work shorter',
+  'anchors': ['A2', 'A3', 'A8', 'A9'],
+  'angle': 'what actually has to change when a deadline is pulled in'},
+ {'id': 'late_start_early_finish',
+  'domain': 'scheduling',
+  'bucket': 'core',
+  'title': 'starting everything immediately can make everything later',
+  'anchors': ['A2', 'A3', 'A8', 'A9'],
+  'angle': 'queues and WIP as a scheduling problem'},
+ {'id': 'milestone_is_evidence',
+  'domain': 'milestones',
+  'bucket': 'core',
+  'title': 'a milestone should prove something changed',
+  'anchors': ['A1', 'A8', 'A10'],
+  'angle': 'using observable outcomes instead of arbitrary calendar markers'},
+ {'id': 'milestone_owner',
+  'domain': 'milestones',
+  'bucket': 'core',
+  'title': 'a milestone without an owner is a future status question',
+  'anchors': ['A1', 'A8', 'A10'],
+  'angle': 'ownership attached to the evidence of completion'},
+ {'id': 'milestone_decision',
+  'domain': 'milestones',
+  'bucket': 'core',
+  'title': 'some milestones should be decisions, not deliverables',
+  'anchors': ['A1', 'A8', 'A10'],
+  'angle': 'decision gates as real schedule events'},
+ {'id': 'milestone_health',
+  'domain': 'milestones',
+  'bucket': 'core',
+  'title': 'green milestones can hide a red project',
+  'anchors': ['A1', 'A8', 'A10'],
+  'angle': 'why local completion does not equal overall health'},
+ {'id': 'dependency_is_commitment',
+  'domain': 'dependencies',
+  'bucket': 'core',
+  'title': 'a dependency is a commitment between two pieces of work',
+  'anchors': ['A3', 'A7', 'A8', 'A10'],
+  'angle': 'making handoffs explicit instead of hoping they happen'},
+ {'id': 'dependency_owner',
+  'domain': 'dependencies',
+  'bucket': 'core',
+  'title': 'every dependency needs someone watching both sides',
+  'anchors': ['A3', 'A7', 'A8', 'A10'],
+  'angle': 'why task ownership alone misses cross-team risk'},
+ {'id': 'dependency_date',
+  'domain': 'dependencies',
+  'bucket': 'core',
+  'title': 'dependencies need dates, not just arrows',
+  'anchors': ['A3', 'A7', 'A8', 'A10'],
+  'angle': 'turning architecture diagrams into delivery logic'},
+ {'id': 'hidden_dependencies',
+  'domain': 'dependencies',
+  'bucket': 'core',
+  'title': 'the most expensive dependencies are often approvals, access and decisions',
+  'anchors': ['A3', 'A7', 'A8', 'A10'],
+  'angle': 'non-production dependencies can dominate the schedule'},
+ {'id': 'dependency_recheck',
+  'domain': 'dependencies',
+  'bucket': 'core',
+  'title': 'dependencies change when scope and sequence change',
+  'anchors': ['A3', 'A7', 'A8', 'A10'],
+  'angle': 'why the map has to move with the plan'},
+ {'id': 'critical_path_not_biggest',
+  'domain': 'critical_path',
+  'bucket': 'core',
+  'title': 'the biggest task is not necessarily the task that controls the finish date',
+  'anchors': ['A3', 'A8', 'A10'],
+  'angle': 'sequence and dependency can matter more than effort'},
+ {'id': 'critical_path_changes',
+  'domain': 'critical_path',
+  'bucket': 'core',
+  'title': 'the path controlling the date can change mid-project',
+  'anchors': ['A3', 'A8', 'A10'],
+  'angle': 'why schedule attention has to move as work moves'},
+ {'id': 'critical_waiting',
+  'domain': 'critical_path',
+  'bucket': 'core',
+  'title': 'waiting can sit on the critical path too',
+  'anchors': ['A3', 'A8', 'A10'],
+  'angle': 'approvals and decisions count as project time'},
+ {'id': 'critical_path_focus',
+  'domain': 'critical_path',
+  'bucket': 'core',
+  'title': 'not every late task threatens the project date',
+  'anchors': ['A3', 'A8', 'A10'],
+  'angle': 'separating noise from schedule impact'},
+ {'id': 'risk_is_future',
+  'domain': 'risk',
+  'bucket': 'core',
+  'title': 'a risk is useful before it becomes a problem',
+  'anchors': ['A1', 'A5', 'A8', 'A10'],
+  'angle': 'turning uncertainty into an owner, trigger and response'},
+ {'id': 'risk_trigger',
+  'domain': 'risk',
+  'bucket': 'core',
+  'title': 'a risk without a trigger is hard to manage',
+  'anchors': ['A1', 'A5', 'A8', 'A10'],
+  'angle': 'what observable sign tells you the contingency should start'},
+ {'id': 'risk_owner',
+  'domain': 'risk',
+  'bucket': 'core',
+  'title': 'putting a risk in a register is not assigning responsibility',
+  'anchors': ['A1', 'A5', 'A8', 'A10'],
+  'angle': 'ownership means monitoring and acting, not merely naming'},
+ {'id': 'risk_response',
+  'domain': 'risk',
+  'bucket': 'core',
+  'title': '"watch closely" is not a risk response',
+  'anchors': ['A1', 'A5', 'A8', 'A10'],
+  'angle': 'what mitigation, avoidance, transfer or acceptance looks like in practical delivery'},
+ {'id': 'risk_budget',
+  'domain': 'risk',
+  'bucket': 'core',
+  'title': 'risk consumes schedule and budget even before it happens',
+  'anchors': ['A1', 'A5', 'A8', 'A10'],
+  'angle': 'why contingency is part of planning rather than pessimism'},
+ {'id': 'risk_retire',
+  'domain': 'risk',
+  'bucket': 'core',
+  'title': 'risks should die when the uncertainty dies',
+  'anchors': ['A1', 'A5', 'A8', 'A10'],
+  'angle': 'keeping risk lists useful instead of accumulating museum exhibits'},
+ {'id': 'risk_vs_issue',
+  'domain': 'issues_escalation',
+  'bucket': 'core',
+  'title': 'once the thing happened, stop calling it a risk',
+  'anchors': ['A1', 'A5', 'A8', 'A10', 'A12'],
+  'angle': 'switching from probability management to resolution'},
+ {'id': 'issue_owner',
+  'domain': 'issues_escalation',
+  'bucket': 'core',
+  'title': 'an issue needs an owner and a next decision',
+  'anchors': ['A1', 'A5', 'A8', 'A10', 'A12'],
+  'angle': 'status descriptions do not resolve anything'},
+ {'id': 'escalate_early',
+  'domain': 'issues_escalation',
+  'bucket': 'core',
+  'title': 'escalation is cheaper before everyone is angry',
+  'anchors': ['A1', 'A5', 'A8', 'A10', 'A12'],
+  'angle': 'raising a constraint while options still exist'},
+ {'id': 'escalation_packet',
+  'domain': 'issues_escalation',
+  'bucket': 'core',
+  'title': 'a useful escalation contains context, options and a decision request',
+  'anchors': ['A1', 'A5', 'A8', 'A10', 'A12'],
+  'angle': 'making it easy for the right person to unblock the project'},
+ {'id': 'red_status',
+  'domain': 'issues_escalation',
+  'bucket': 'core',
+  'title': 'red is a management signal, not a confession of failure',
+  'anchors': ['A1', 'A5', 'A8', 'A10', 'A12'],
+  'angle': 'using status to create action instead of protect appearances'},
+ {'id': 'decision_log',
+  'domain': 'decisions',
+  'bucket': 'core',
+  'title': 'projects forget decisions faster than they forget tasks',
+  'anchors': ['A1', 'A8', 'A10', 'A12'],
+  'angle': 'why rationale and owner matter months later'},
+ {'id': 'decision_deadline',
+  'domain': 'decisions',
+  'bucket': 'core',
+  'title': 'decisions need due dates too',
+  'anchors': ['A1', 'A8', 'A10', 'A12'],
+  'angle': 'a pending decision can be a schedule dependency'},
+ {'id': 'reversible_decisions',
+  'domain': 'decisions',
+  'bucket': 'core',
+  'title': 'not every decision deserves the same ceremony',
+  'anchors': ['A1', 'A8', 'A10', 'A12'],
+  'angle': 'matching decision process to reversibility and impact'},
+ {'id': 'decision_owner_vs_consensus',
+  'domain': 'decisions',
+  'bucket': 'core',
+  'title': 'consensus is not always a decision mechanism',
+  'anchors': ['A1', 'A8', 'A10', 'A12'],
+  'angle': 'clear decision rights prevent endless alignment loops'},
+ {'id': 'decision_quality',
+  'domain': 'decisions',
+  'bucket': 'core',
+  'title': 'a fast bad decision and a slow perfect decision can both kill a project',
+  'anchors': ['A1', 'A8', 'A10', 'A12'],
+  'angle': 'timeliness as part of decision quality'},
+ {'id': 'change_is_not_bad',
+  'domain': 'change_control',
+  'bucket': 'core',
+  'title': 'change is normal; invisible change is expensive',
+  'anchors': ['A5', 'A8', 'A12'],
+  'angle': 'the point of change control is visibility, not punishment'},
+ {'id': 'change_impact',
+  'domain': 'change_control',
+  'bucket': 'core',
+  'title': 'every change should answer what moves with it',
+  'anchors': ['A5', 'A8', 'A12'],
+  'angle': 'schedule, cost, risk, quality and other deliverables as connected consequences'},
+ {'id': 'change_small',
+  'domain': 'change_control',
+  'bucket': 'core',
+  'title': 'small changes need proportionate control',
+  'anchors': ['A5', 'A8', 'A12'],
+  'angle': 'avoiding both chaos and bureaucracy'},
+ {'id': 'change_log',
+  'domain': 'change_control',
+  'bucket': 'core',
+  'title': 'a change log is memory for the project contract with reality',
+  'anchors': ['A5', 'A8', 'A12'],
+  'angle': 'keeping cumulative drift visible'},
+ {'id': 'change_decision',
+  'domain': 'change_control',
+  'bucket': 'core',
+  'title': 'a change request is a decision package, not a form',
+  'anchors': ['A5', 'A8', 'A12'],
+  'angle': 'framing options and impacts so somebody can choose'},
+ {'id': 'role_clarity',
+  'domain': 'roles_governance',
+  'bucket': 'core',
+  'title': 'roles become important exactly where work crosses boundaries',
+  'anchors': ['A1', 'A3', 'A8', 'A10'],
+  'angle': 'who recommends, decides, executes and approves'},
+ {'id': 'governance_light',
+  'domain': 'roles_governance',
+  'bucket': 'core',
+  'title': 'governance should get heavier only when risk and complexity justify it',
+  'anchors': ['A1', 'A3', 'A8', 'A10'],
+  'angle': 'minimum viable control for the project at hand'},
+ {'id': 'sponsor_role',
+  'domain': 'roles_governance',
+  'bucket': 'core',
+  'title': 'the sponsor is not just the person invited to the kickoff',
+  'anchors': ['A1', 'A3', 'A8', 'A10'],
+  'angle': 'what the project needs from authority above the PM'},
+ {'id': 'raci_limits',
+  'domain': 'roles_governance',
+  'bucket': 'core',
+  'title': 'a matrix cannot rescue a team that avoids decisions',
+  'anchors': ['A1', 'A3', 'A8', 'A10'],
+  'angle': 'roles tools help only when behavior matches them'},
+ {'id': 'stakeholder_interest_power',
+  'domain': 'stakeholders',
+  'bucket': 'core',
+  'title': 'not every stakeholder needs the same communication',
+  'anchors': ['A3', 'A10', 'A12'],
+  'angle': 'attention based on influence, impact and decision role'},
+ {'id': 'stakeholder_expectation',
+  'domain': 'stakeholders',
+  'bucket': 'core',
+  'title': 'expectation gaps become delivery problems',
+  'anchors': ['A3', 'A10', 'A12'],
+  'angle': 'alignment as ongoing work, not a kickoff artifact'},
+ {'id': 'stakeholder_conflict',
+  'domain': 'stakeholders',
+  'bucket': 'core',
+  'title': 'two valid stakeholder goals can still conflict',
+  'anchors': ['A3', 'A10', 'A12'],
+  'angle': 'making the trade-off explicit instead of promising both'},
+ {'id': 'stakeholder_change',
+  'domain': 'stakeholders',
+  'bucket': 'core',
+  'title': 'stakeholder maps are not static',
+  'anchors': ['A3', 'A10', 'A12'],
+  'angle': 'new people, changed influence and changed incentives over long programs'},
+ {'id': 'communication_action',
+  'domain': 'communication',
+  'bucket': 'core',
+  'title': "project communication should change somebody's next action",
+  'anchors': ['A1', 'A3', 'A8', 'A10', 'A12'],
+  'angle': 'information without consequence is often noise'},
+ {'id': 'audience_format',
+  'domain': 'communication',
+  'bucket': 'core',
+  'title': 'the same project truth needs different formats for different audiences',
+  'anchors': ['A1', 'A3', 'A8', 'A10', 'A12'],
+  'angle': 'detail for the team, decisions for leaders, evidence for clients'},
+ {'id': 'bad_news_speed',
+  'domain': 'communication',
+  'bucket': 'core',
+  'title': 'bad news ages badly',
+  'anchors': ['A1', 'A3', 'A8', 'A10', 'A12'],
+  'angle': 'why delay usually reduces options and trust'},
+ {'id': 'written_vs_sync',
+  'domain': 'communication',
+  'bucket': 'core',
+  'title': 'some conversations should be meetings; some should become durable text',
+  'anchors': ['A1', 'A3', 'A8', 'A10', 'A12'],
+  'angle': 'choosing medium based on ambiguity, speed and future memory'},
+ {'id': 'communication_contract',
+  'domain': 'communication',
+  'bucket': 'core',
+  'title': 'teams benefit from knowing where decisions, updates and urgent issues live',
+  'anchors': ['A1', 'A3', 'A8', 'A10', 'A12'],
+  'angle': 'reducing search and duplicate communication'},
+ {'id': 'meeting_output',
+  'domain': 'meetings',
+  'bucket': 'core',
+  'title': 'a meeting without an output is a social event with a calendar invite',
+  'anchors': ['A1', 'A3', 'A8', 'A10'],
+  'angle': 'decisions, owners and next actions as the minimum result'},
+ {'id': 'meeting_attendees',
+  'domain': 'meetings',
+  'bucket': 'core',
+  'title': 'inviting everyone is often a sign the decision structure is unclear',
+  'anchors': ['A1', 'A3', 'A8', 'A10'],
+  'angle': 'attendance by role in the conversation'},
+ {'id': 'meeting_vs_async',
+  'domain': 'meetings',
+  'bucket': 'core',
+  'title': 'meetings are expensive bandwidth',
+  'anchors': ['A1', 'A3', 'A8', 'A10'],
+  'angle': 'when ambiguity deserves sync and when status does not'},
+ {'id': 'meeting_followup',
+  'domain': 'meetings',
+  'bucket': 'core',
+  'title': 'the real meeting ends when the actions are captured',
+  'anchors': ['A1', 'A3', 'A8', 'A10'],
+  'angle': 'preventing verbal alignment from evaporating'},
+ {'id': 'docs_as_memory',
+  'domain': 'documentation',
+  'bucket': 'core',
+  'title': 'documentation is external project memory',
+  'anchors': ['A1', 'A8', 'A9', 'A10'],
+  'angle': 'writing down what the team should not have to rediscover'},
+ {'id': 'decision_docs',
+  'domain': 'documentation',
+  'bucket': 'core',
+  'title': 'document decisions, not every breath the project takes',
+  'anchors': ['A1', 'A8', 'A9', 'A10'],
+  'angle': 'high-value records over transcript culture'},
+ {'id': 'doc_owner',
+  'domain': 'documentation',
+  'bucket': 'core',
+  'title': 'every living document needs an update path',
+  'anchors': ['A1', 'A8', 'A9', 'A10'],
+  'angle': 'a source of truth dies when nobody owns freshness'},
+ {'id': 'documentation_level',
+  'domain': 'documentation',
+  'bucket': 'core',
+  'title': 'documentation should scale with consequence and handoff count',
+  'anchors': ['A1', 'A8', 'A9', 'A10'],
+  'angle': 'how to avoid both tribal knowledge and paperwork theatre'},
+ {'id': 'status_report_decision',
+  'domain': 'reporting',
+  'bucket': 'core',
+  'title': 'a status report should help somebody decide or act',
+  'anchors': ['A2', 'A5', 'A8', 'A9', 'A10'],
+  'angle': 'moving from activity lists to project health'},
+ {'id': 'percent_complete',
+  'domain': 'reporting',
+  'bucket': 'core',
+  'title': 'percent complete can hide the hardest 10 percent',
+  'anchors': ['A2', 'A5', 'A8', 'A9', 'A10'],
+  'angle': 'using evidence and milestones instead of comforting arithmetic'},
+ {'id': 'status_color',
+  'domain': 'reporting',
+  'bucket': 'core',
+  'title': 'green needs a definition',
+  'anchors': ['A2', 'A5', 'A8', 'A9', 'A10'],
+  'angle': 'making status criteria consistent enough to trust'},
+ {'id': 'forecast_not_history',
+  'domain': 'reporting',
+  'bucket': 'core',
+  'title': 'good reporting is partly a forecast',
+  'anchors': ['A2', 'A5', 'A8', 'A9', 'A10'],
+  'angle': 'what is likely to happen next matters more than what happened last week'},
+ {'id': 'report_exception',
+  'domain': 'reporting',
+  'bucket': 'core',
+  'title': 'leaders often need exceptions, not the entire task list',
+  'anchors': ['A2', 'A5', 'A8', 'A9', 'A10'],
+  'angle': 'surfacing deviations, decisions and risks'},
+ {'id': 'acceptance_before_build',
+  'domain': 'quality_acceptance',
+  'bucket': 'core',
+  'title': 'acceptance criteria belong near the beginning',
+  'anchors': ['A6', 'A7', 'A8', 'A10'],
+  'angle': 'quality gets easier when everyone knows what pass means'},
+ {'id': 'quality_owner',
+  'domain': 'quality_acceptance',
+  'bucket': 'core',
+  'title': 'quality cannot be thrown over the wall to QA',
+  'anchors': ['A6', 'A7', 'A8', 'A10'],
+  'angle': 'the whole delivery system creates the result'},
+ {'id': 'review_budget',
+  'domain': 'quality_acceptance',
+  'bucket': 'core',
+  'title': 'reviews consume time and should be planned',
+  'anchors': ['A6', 'A7', 'A8', 'A10'],
+  'angle': 'feedback cycles are schedule events, not free space'},
+ {'id': 'definition_done_project',
+  'domain': 'quality_acceptance',
+  'bucket': 'core',
+  'title': 'project-level done includes acceptance and handover',
+  'anchors': ['A6', 'A7', 'A8', 'A10'],
+  'angle': 'completion beyond internal task closure'},
+ {'id': 'quality_tradeoff',
+  'domain': 'quality_acceptance',
+  'bucket': 'core',
+  'title': 'quality trade-offs should be explicit decisions',
+  'anchors': ['A6', 'A7', 'A8', 'A10'],
+  'angle': 'when time or budget pressure changes the bar, name the consequence'},
+ {'id': 'handover_design',
+  'domain': 'handover_closure',
+  'bucket': 'core',
+  'title': 'handover should be designed from the start',
+  'anchors': ['A6', 'A9', 'A10', 'A13'],
+  'angle': 'the future owner needs context, assets, decisions and known limitations'},
+ {'id': 'closure_is_work',
+  'domain': 'handover_closure',
+  'bucket': 'core',
+  'title': 'project closure is actual project work',
+  'anchors': ['A6', 'A9', 'A10', 'A13'],
+  'angle': 'acceptance, loose ends, economics, access and documentation do not close themselves'},
+ {'id': 'unfinished_tail',
+  'domain': 'handover_closure',
+  'bucket': 'core',
+  'title': 'the last 5 percent can be the most operationally expensive',
+  'anchors': ['A6', 'A9', 'A10', 'A13'],
+  'angle': 'small unresolved items after launch create long tails'},
+ {'id': 'close_decisions',
+  'domain': 'handover_closure',
+  'bucket': 'core',
+  'title': 'closure should record what remains intentionally unresolved',
+  'anchors': ['A6', 'A9', 'A10', 'A13'],
+  'angle': 'known debt is different from forgotten debt'},
+ {'id': 'celebrate_close',
+  'domain': 'handover_closure',
+  'bucket': 'core',
+  'title': 'closing well includes recognizing the team',
+  'anchors': ['A6', 'A9', 'A10', 'A13'],
+  'angle': 'why psychological closure matters after sustained delivery'},
+ {'id': 'retro_to_change',
+  'domain': 'retrospectives',
+  'bucket': 'core',
+  'title': 'a retro is useless if nothing changes afterward',
+  'anchors': ['A9', 'A13', 'A17'],
+  'angle': 'turning reflection into one or two operating experiments'},
+ {'id': 'retro_specific',
+  'domain': 'retrospectives',
+  'bucket': 'core',
+  'title': '"communication could be better" is not a retro insight',
+  'anchors': ['A9', 'A13', 'A17'],
+  'angle': 'finding a concrete failure mechanism instead of vague sentiment'},
+ {'id': 'retro_system',
+  'domain': 'retrospectives',
+  'bucket': 'core',
+  'title': 'retrospectives should inspect the system, not hunt for a guilty person',
+  'anchors': ['A9', 'A13', 'A17'],
+  'angle': 'process, incentives and constraints behind failure'},
+ {'id': 'lessons_reuse',
+  'domain': 'retrospectives',
+  'bucket': 'core',
+  'title': 'lessons learned should change the next project template',
+  'anchors': ['A9', 'A13', 'A17'],
+  'angle': 'institutional learning rather than archive storage'},
+ {'id': 'budget_is_plan',
+  'domain': 'budget_economics',
+  'bucket': 'core',
+  'title': 'a budget is another version of the project plan',
+  'anchors': ['A5', 'A9', 'A10', 'A12'],
+  'angle': 'money encodes assumptions about effort, scope and timing'},
+ {'id': 'forecast_budget',
+  'domain': 'budget_economics',
+  'bucket': 'core',
+  'title': 'budget control is forecasting, not just recording spend',
+  'anchors': ['A5', 'A9', 'A10', 'A12'],
+  'angle': 'seeing the overrun while options still exist'},
+ {'id': 'cost_of_delay',
+  'domain': 'budget_economics',
+  'bucket': 'core',
+  'title': 'delay has a cost even when nobody sends an invoice for it',
+  'anchors': ['A5', 'A9', 'A10', 'A12'],
+  'angle': 'capacity, opportunity and downstream impact'},
+ {'id': 'tradeoff_triangle',
+  'domain': 'budget_economics',
+  'bucket': 'core',
+  'title': 'when scope, time and cost all refuse to move, quality or people usually pay',
+  'anchors': ['A5', 'A9', 'A10', 'A12'],
+  'angle': 'making the hidden variable explicit'},
+ {'id': 'contingency_money',
+  'domain': 'budget_economics',
+  'bucket': 'core',
+  'title': 'contingency is not spare money',
+  'anchors': ['A5', 'A9', 'A10', 'A12'],
+  'angle': 'protecting uncertainty rather than treating reserve as available scope'},
+ {'id': 'capacity_not_headcount',
+  'domain': 'resource_capacity',
+  'bucket': 'core',
+  'title': 'headcount is not capacity',
+  'anchors': ['A2', 'A3', 'A7', 'A9', 'A10'],
+  'angle': 'availability, skills, context and competing commitments change what a team can actually do'},
+ {'id': 'resource_loading',
+  'domain': 'resource_capacity',
+  'bucket': 'core',
+  'title': 'resource plans should show overload before people feel it',
+  'anchors': ['A2', 'A3', 'A7', 'A9', 'A10'],
+  'angle': 'capacity as an early-warning system'},
+ {'id': 'shared_resource',
+  'domain': 'resource_capacity',
+  'bucket': 'core',
+  'title': 'shared specialists create portfolio dependencies',
+  'anchors': ['A2', 'A3', 'A7', 'A9', 'A10'],
+  'angle': 'one person can become the critical path of several projects'},
+ {'id': 'resource_substitution',
+  'domain': 'resource_capacity',
+  'bucket': 'core',
+  'title': 'people are not interchangeable cells in a spreadsheet',
+  'anchors': ['A2', 'A3', 'A7', 'A9', 'A10'],
+  'angle': 'skill shape and project context matter'},
+ {'id': 'capacity_buffer',
+  'domain': 'resource_capacity',
+  'bucket': 'core',
+  'title': '100 percent planned utilization leaves no room for reality',
+  'anchors': ['A2', 'A3', 'A7', 'A9', 'A10'],
+  'angle': 'interruptions, support and uncertainty need somewhere to go'},
+ {'id': 'priority_means_no',
+  'domain': 'prioritization',
+  'bucket': 'core',
+  'title': 'priority only exists when something else loses',
+  'anchors': ['A2', 'A3', 'A9', 'A10'],
+  'angle': 'why ranking without consequence is theatre'},
+ {'id': 'priority_levels',
+  'domain': 'prioritization',
+  'bucket': 'core',
+  'title': 'P1 through P5 mean nothing if all five start today',
+  'anchors': ['A2', 'A3', 'A9', 'A10'],
+  'angle': 'connecting priority to resource and sequence decisions'},
+ {'id': 'urgent_important_project',
+  'domain': 'prioritization',
+  'bucket': 'core',
+  'title': 'urgency can hijack the project portfolio',
+  'anchors': ['A2', 'A3', 'A9', 'A10'],
+  'angle': 'protecting important work from constant local emergencies'},
+ {'id': 'repriority_cost',
+  'domain': 'prioritization',
+  'bucket': 'core',
+  'title': 'changing priority has a switching cost',
+  'anchors': ['A2', 'A3', 'A9', 'A10'],
+  'angle': 'replanning, rebriefing and lost context as real project work'},
+ {'id': 'priority_owner',
+  'domain': 'prioritization',
+  'bucket': 'core',
+  'title': 'someone must be allowed to resolve competing priorities',
+  'anchors': ['A2', 'A3', 'A9', 'A10'],
+  'angle': 'avoiding escalation loops between equally loud requests'},
+ {'id': 'portfolio_vs_project',
+  'domain': 'portfolio',
+  'bucket': 'core',
+  'title': 'a healthy project can live inside an unhealthy portfolio',
+  'anchors': ['A2', 'A8', 'A9'],
+  'angle': 'local green status can hide organization-level overload'},
+ {'id': 'portfolio_dependencies',
+  'domain': 'portfolio',
+  'bucket': 'core',
+  'title': 'projects compete and depend on each other even when their plans do not show it',
+  'anchors': ['A2', 'A8', 'A9'],
+  'angle': 'shared people, systems and decision-makers'},
+ {'id': 'stop_start_continue',
+  'domain': 'portfolio',
+  'bucket': 'core',
+  'title': 'portfolio management includes stopping work',
+  'anchors': ['A2', 'A8', 'A9'],
+  'angle': 'why killing or pausing initiatives can be a delivery skill'},
+ {'id': 'portfolio_balance',
+  'domain': 'portfolio',
+  'bucket': 'core',
+  'title': 'a portfolio needs different kinds of risk and horizon',
+  'anchors': ['A2', 'A8', 'A9'],
+  'angle': 'why every initiative cannot be the urgent flagship'},
+ {'id': 'team_clarity',
+  'domain': 'team_dynamics',
+  'bucket': 'core',
+  'title': 'teams often need clarity more than motivation',
+  'anchors': ['A2', 'A3', 'A10', 'A13'],
+  'angle': 'unclear goals and ownership can look like low engagement'},
+ {'id': 'psychological_load',
+  'domain': 'team_dynamics',
+  'bucket': 'core',
+  'title': 'project uncertainty creates cognitive load',
+  'anchors': ['A2', 'A3', 'A10', 'A13'],
+  'angle': 'structure as a way to free attention for actual work'},
+ {'id': 'team_autonomy',
+  'domain': 'team_dynamics',
+  'bucket': 'core',
+  'title': 'autonomy needs boundaries',
+  'anchors': ['A2', 'A3', 'A10', 'A13'],
+  'angle': 'people can move faster when decisions they own are explicit'},
+ {'id': 'team_visibility',
+  'domain': 'team_dynamics',
+  'bucket': 'core',
+  'title': 'invisible work creates invisible overload',
+  'anchors': ['A2', 'A3', 'A10', 'A13'],
+  'angle': 'making coordination and review work visible in the plan'},
+ {'id': 'team_trust',
+  'domain': 'team_dynamics',
+  'bucket': 'core',
+  'title': 'trust grows when commitments and constraints are explicit',
+  'anchors': ['A2', 'A3', 'A10', 'A13'],
+  'angle': 'reliability as a project-management behavior'},
+ {'id': 'conflict_is_data',
+  'domain': 'conflict',
+  'bucket': 'core',
+  'title': 'conflict can be information about a hidden trade-off',
+  'anchors': ['A3', 'A10', 'A12', 'A13'],
+  'angle': 'finding the structural disagreement before solving the interpersonal one'},
+ {'id': 'conflict_early',
+  'domain': 'conflict',
+  'bucket': 'core',
+  'title': 'small disagreements are cheaper to resolve before they become positions',
+  'anchors': ['A3', 'A10', 'A12', 'A13'],
+  'angle': 'surfacing tension while options are still open'},
+ {'id': 'conflict_constraints',
+  'domain': 'conflict',
+  'bucket': 'core',
+  'title': 'many team conflicts are actually constraint conflicts',
+  'anchors': ['A3', 'A10', 'A12', 'A13'],
+  'angle': 'time, quality, scope and ownership pulling people in different directions'},
+ {'id': 'deescalation',
+  'domain': 'conflict',
+  'bucket': 'core',
+  'title': 'de-escalation starts with separating facts, constraints and preferences',
+  'anchors': ['A3', 'A10', 'A12', 'A13'],
+  'angle': 'making the problem discussable again'},
+ {'id': 'delegation_outcome',
+  'domain': 'delegation',
+  'bucket': 'core',
+  'title': 'delegate outcomes and boundaries, not just tasks',
+  'anchors': ['A13'],
+  'angle': 'giving autonomy without abandoning accountability'},
+ {'id': 'delegation_checkpoints',
+  'domain': 'delegation',
+  'bucket': 'core',
+  'title': 'good delegation includes agreed checkpoints',
+  'anchors': ['A13'],
+  'angle': 'avoiding both micromanagement and surprise failure'},
+ {'id': 'mentor_decisions',
+  'domain': 'delegation',
+  'bucket': 'core',
+  'title': 'teach the decision logic, not only the checklist',
+  'anchors': ['A13'],
+  'angle': 'how junior PMs build judgment'},
+ {'id': 'take_work_back',
+  'domain': 'delegation',
+  'bucket': 'core',
+  'title': 'taking work back is the fastest way to teach dependence',
+  'anchors': ['A13'],
+  'angle': 'reviewing without quietly becoming the owner again'},
+ {'id': 'vendor_is_dependency',
+  'domain': 'vendor_external',
+  'bucket': 'core',
+  'title': 'a vendor is an external dependency with a contract attached',
+  'anchors': ['A3', 'A8', 'A9', 'A10'],
+  'angle': 'planning inputs, approvals and acceptance around external teams'},
+ {'id': 'vendor_brief',
+  'domain': 'vendor_external',
+  'bucket': 'core',
+  'title': 'vendor quality starts with the brief and acceptance model',
+  'anchors': ['A3', 'A8', 'A9', 'A10'],
+  'angle': 'outsourcing execution does not outsource clarity'},
+ {'id': 'vendor_lead_time',
+  'domain': 'vendor_external',
+  'bucket': 'core',
+  'title': 'external partners have queues too',
+  'anchors': ['A3', 'A8', 'A9', 'A10'],
+  'angle': 'lead time and availability should enter the project schedule'},
+ {'id': 'vendor_handover',
+  'domain': 'vendor_external',
+  'bucket': 'core',
+  'title': 'vendor handover needs operational ownership',
+  'anchors': ['A3', 'A8', 'A9', 'A10'],
+  'angle': 'making sure knowledge survives the commercial relationship'},
+ {'id': 'client_yes',
+  'domain': 'client_commercial',
+  'bucket': 'core',
+  'title': 'saying yes to a client can be a project risk',
+  'anchors': ['A5', 'A9', 'A12'],
+  'angle': 'service quality sometimes means showing the consequence of the request'},
+ {'id': 'commercial_pm',
+  'domain': 'client_commercial',
+  'bucket': 'core',
+  'title': 'commercial awareness is part of delivery judgment',
+  'anchors': ['A5', 'A9', 'A12'],
+  'angle': 'scope, budget and relationship are connected systems'},
+ {'id': 'proposal_assumptions',
+  'domain': 'client_commercial',
+  'bucket': 'core',
+  'title': 'a proposal contains delivery assumptions whether written or not',
+  'anchors': ['A5', 'A9', 'A12'],
+  'angle': 'making them explicit before they become disputes'},
+ {'id': 'negotiation_options',
+  'domain': 'client_commercial',
+  'bucket': 'core',
+  'title': 'good negotiation gives options, not ultimatums',
+  'anchors': ['A5', 'A9', 'A12'],
+  'angle': 'changing scope, timing, cost or sequence to preserve the goal'},
+ {'id': 'certainty_theatre',
+  'domain': 'uncertainty',
+  'bucket': 'core',
+  'title': 'false certainty is more dangerous than visible uncertainty',
+  'anchors': ['A1', 'A2', 'A8', 'A10'],
+  'angle': 'using confidence and assumptions instead of decorative precision'},
+ {'id': 'progressive_detail',
+  'domain': 'uncertainty',
+  'bucket': 'core',
+  'title': 'detail should increase as uncertainty falls',
+  'anchors': ['A1', 'A2', 'A8', 'A10'],
+  'angle': 'planning at the right resolution for the current stage'},
+ {'id': 'unknown_unknowns',
+  'domain': 'uncertainty',
+  'bucket': 'core',
+  'title': 'you cannot list every risk, but you can design for surprises',
+  'anchors': ['A1', 'A2', 'A8', 'A10'],
+  'angle': 'contingency, decision speed and spare capacity'},
+ {'id': 'uncertainty_owner',
+  'domain': 'uncertainty',
+  'bucket': 'core',
+  'title': 'uncertainty still needs an owner',
+  'anchors': ['A1', 'A2', 'A8', 'A10'],
+  'angle': 'somebody has to discover the answer by a date'},
+ {'id': 'health_not_status',
+  'domain': 'project_health',
+  'bucket': 'core',
+  'title': 'project health is more than red amber green',
+  'anchors': ['A2', 'A5', 'A8', 'A9', 'A10'],
+  'angle': 'schedule, scope, economics, risks and decision flow together'},
+ {'id': 'leading_indicators',
+  'domain': 'project_health',
+  'bucket': 'core',
+  'title': 'the most useful project signals often appear before a missed deadline',
+  'anchors': ['A2', 'A5', 'A8', 'A9', 'A10'],
+  'angle': 'approval delay, rework, burn rate and unresolved decisions as warnings'},
+ {'id': 'forecast_confidence',
+  'domain': 'project_health',
+  'bucket': 'core',
+  'title': 'a forecast should include confidence',
+  'anchors': ['A2', 'A5', 'A8', 'A9', 'A10'],
+  'angle': 'distinguishing the date from how sure the team is about the date'},
+ {'id': 'health_trend',
+  'domain': 'project_health',
+  'bucket': 'core',
+  'title': 'direction matters as much as current status',
+  'anchors': ['A2', 'A5', 'A8', 'A9', 'A10'],
+  'angle': 'a green project getting worse deserves attention'},
+ {'id': 'different_clocks',
+  'domain': 'cross_functional',
+  'bucket': 'core',
+  'title': 'different disciplines run on different clocks',
+  'anchors': ['A3', 'A7', 'A8', 'A10'],
+  'angle': 'planning cross-functional work without pretending every team behaves the same'},
+ {'id': 'translation_loss',
+  'domain': 'cross_functional',
+  'bucket': 'core',
+  'title': 'every functional boundary risks translation loss',
+  'anchors': ['A3', 'A7', 'A8', 'A10'],
+  'angle': 'keeping intent intact as work moves between business and specialists'},
+ {'id': 'cross_functional_sequence',
+  'domain': 'cross_functional',
+  'bucket': 'core',
+  'title': 'cross-functional delivery is mostly sequencing commitments',
+  'anchors': ['A3', 'A7', 'A8', 'A10'],
+  'angle': 'coordination as more than status meetings'},
+ {'id': 'shared_definition',
+  'domain': 'cross_functional',
+  'bucket': 'core',
+  'title': 'teams need shared definitions for ready, review and done',
+  'anchors': ['A3', 'A7', 'A8', 'A10'],
+  'angle': 'reducing friction at handoffs without imposing one universal workflow'},
+ {'id': 'creative_dependency',
+  'domain': 'design',
+  'bucket': 'adjacent',
+  'title': 'creative work has dependencies even when the board looks flat',
+  'anchors': ['A7', 'A8'],
+  'angle': 'identity, UI, motion and 3D do not become ready in the same order'},
+ {'id': 'creative_feedback',
+  'domain': 'design',
+  'bucket': 'adjacent',
+  'title': 'feedback is production input and needs a schedule',
+  'anchors': ['A7', 'A8'],
+  'angle': 'review cycles as real work rather than free iteration'},
+ {'id': 'creative_briefing',
+  'domain': 'design',
+  'bucket': 'adjacent',
+  'title': 'specialists need different kinds of clarity',
+  'anchors': ['A7', 'A8'],
+  'angle': 'briefing by discipline without losing the common objective'},
+ {'id': 'project_product_boundary',
+  'domain': 'product',
+  'bucket': 'adjacent',
+  'title': 'projects end; products keep accumulating consequences',
+  'anchors': ['A11', 'A14'],
+  'angle': 'what delivery ownership can and cannot solve after launch'},
+ {'id': 'product_feedback_loop',
+  'domain': 'product',
+  'bucket': 'adjacent',
+  'title': 'shipping is the start of the feedback loop, not the end of the story',
+  'anchors': ['A11', 'A14'],
+  'angle': 'what project managers can learn from product thinking'},
+ {'id': 'feature_vs_goal',
+  'domain': 'product',
+  'bucket': 'adjacent',
+  'title': 'a requested feature is not automatically the project goal',
+  'anchors': ['A11', 'A14'],
+  'angle': 'keeping the outcome visible when solution ideas arrive early'},
+ {'id': 'campaign_parallelism',
+  'domain': 'marketing_delivery',
+  'bucket': 'adjacent',
+  'title': 'campaign work is a portfolio inside a project',
+  'anchors': ['A4', 'A8'],
+  'angle': 'social, paid, influencer and content streams with different dependencies'},
+ {'id': 'multi_market',
+  'domain': 'marketing_delivery',
+  'bucket': 'adjacent',
+  'title': 'multi-market delivery multiplies constraints faster than deliverables',
+  'anchors': ['A4', 'A8'],
+  'angle': 'shared framework with local approvals and realities'},
+ {'id': 'calendar_dependency',
+  'domain': 'marketing_delivery',
+  'bucket': 'adjacent',
+  'title': 'a content calendar is also a dependency schedule',
+  'anchors': ['A4', 'A8'],
+  'angle': 'approvals, assets and channels behind each publication date'},
+ {'id': 'technical_pm_boundary',
+  'domain': 'engineering',
+  'bucket': 'adjacent',
+  'title': 'technical literacy for a PM is mainly about better questions',
+  'anchors': ['A6'],
+  'angle': 'enough depth to discuss estimates and scope without pretending to code'},
+ {'id': 'qa_early',
+  'domain': 'engineering',
+  'bucket': 'adjacent',
+  'title': 'QA begins when acceptance becomes explicit',
+  'anchors': ['A6'],
+  'angle': 'quality thinking before the final test cycle'},
+ {'id': 'automation_judgment',
+  'domain': 'automation',
+  'bucket': 'adjacent',
+  'title': 'automate repetition before judgment',
+  'anchors': ['A15', 'A16', 'A17'],
+  'angle': 'where deterministic rules are safer than model guesses'},
+ {'id': 'automation_failure_mode',
+  'domain': 'automation',
+  'bucket': 'adjacent',
+  'title': 'an automation is only useful after you understand how it fails',
+  'anchors': ['A15', 'A16', 'A17'],
+  'angle': 'testing edge cases as part of PM tooling'},
+ {'id': 'discovery_decision',
+  'domain': 'discovery',
+  'bucket': 'adjacent',
+  'title': 'research matters when it changes a decision',
+  'anchors': ['A14'],
+  'angle': 'turning interviews into choices rather than a slide deck'},
+ {'id': 'discovery_bias',
+  'domain': 'discovery',
+  'bucket': 'adjacent',
+  'title': 'good discovery tries to disprove the convenient story',
+  'anchors': ['A14'],
+  'angle': 'questions designed to find surprise rather than agreement'}]
 
 TOPIC_HISTORY_PATH = ROOT / "generated" / "topic_history.json"
-TOPIC_COOLDOWN = 44  # last 44 generated lanes cannot be selected again
+TOPIC_COOLDOWN = 120  # individual topic lanes stay out for a long time
+FAMILY_LOOKBACK = 80  # rotate topic families based on recent generation history
 
 
 def load_topic_history():
@@ -325,53 +1305,70 @@ def load_topic_history():
 
 
 def choose_topic_lanes(history):
-    """Choose four lanes with hard diversity before the model sees the prompt."""
-    recent_ids = [x.get("lane_id") for x in history[-TOPIC_COOLDOWN:] if x.get("lane_id")]
-    blocked = set(recent_ids)
-    available = [x for x in TOPIC_LANES if x["id"] not in blocked]
-
-    # If the catalog is eventually exhausted, release only the oldest cooldown entries.
-    if len(available) < DRAFT_COUNT:
-        blocked = set(recent_ids[-24:])
-        available = [x for x in TOPIC_LANES if x["id"] not in blocked]
-
+    """Pick mostly core PM fundamentals, rotating families and avoiding recent lanes."""
     rng = random.SystemRandom()
-    rng.shuffle(available)
+
+    recent_ids = [x.get("lane_id") for x in history[-TOPIC_COOLDOWN:] if x.get("lane_id")]
+    blocked_ids = set(recent_ids)
+
+    # Track how often each family appeared recently. Newer history matters most simply
+    # because the window is bounded. Families with the lowest use are preferred.
+    family_use = {}
+    for item in history[-FAMILY_LOOKBACK:]:
+        fam = item.get("domain")
+        if fam:
+            family_use[fam] = family_use.get(fam, 0) + 1
+
+    available = [x for x in TOPIC_LANES if x["id"] not in blocked_ids]
+    if len(available) < DRAFT_COUNT:
+        # Keep only the newest 40 lane IDs blocked if the giant catalog is somehow exhausted.
+        blocked_ids = set(recent_ids[-40:])
+        available = [x for x in TOPIC_LANES if x["id"] not in blocked_ids]
+
+    core = [x for x in available if x.get("bucket", "core") == "core"]
+    adjacent = [x for x in available if x.get("bucket") == "adjacent"]
+
+    def pick_from(pool, count, used_domains):
+        chosen = []
+        while len(chosen) < count:
+            candidates = [x for x in pool if x["domain"] not in used_domains and x not in chosen]
+            if not candidates:
+                break
+            min_use = min(family_use.get(x["domain"], 0) for x in candidates)
+            # Allow a small random pool around the least-used families so output is not deterministic.
+            low_use = [x for x in candidates if family_use.get(x["domain"], 0) <= min_use + 1]
+            lane = rng.choice(low_use)
+            chosen.append(lane)
+            used_domains.add(lane["domain"])
+        return chosen
 
     selected = []
     used_domains = set()
-    automation_count = 0
 
-    # First pass: one lane per domain, max one automation topic.
-    for lane in available:
-        if lane["domain"] in used_domains:
-            continue
-        if lane["domain"] == "automation" and automation_count >= 1:
-            continue
-        selected.append(lane)
-        used_domains.add(lane["domain"])
-        automation_count += int(lane["domain"] == "automation")
-        if len(selected) == DRAFT_COUNT:
-            break
+    # Core PM is the default: 4 core topics on two runs out of three.
+    # Every third run, allow exactly one adjacent/specialized topic.
+    completed_runs = len(history) // DRAFT_COUNT
+    adjacent_allowed = (completed_runs % 3 == 2) and bool(adjacent)
+    core_needed = 3 if adjacent_allowed else 4
 
-    # Emergency fill, still never duplicate a lane.
+    selected.extend(pick_from(core, core_needed, used_domains))
+    if adjacent_allowed:
+        selected.extend(pick_from(adjacent, 1, used_domains))
+
     if len(selected) < DRAFT_COUNT:
-        for lane in available:
-            if lane in selected:
-                continue
-            if lane["domain"] == "automation" and automation_count >= 1:
-                continue
-            selected.append(lane)
-            automation_count += int(lane["domain"] == "automation")
-            if len(selected) == DRAFT_COUNT:
-                break
+        selected.extend(pick_from(core, DRAFT_COUNT - len(selected), used_domains))
+    if len(selected) < DRAFT_COUNT:
+        selected.extend(pick_from(adjacent, DRAFT_COUNT - len(selected), used_domains))
 
     if len(selected) != DRAFT_COUNT:
-        raise RuntimeError("Not enough unused topic lanes available")
+        raise RuntimeError("Not enough diverse unused topic lanes available")
+
+    # Randomize slot order so provocative posts are not always tied to the same kind of topic.
+    rng.shuffle(selected)
 
     print("SELECTED TOPIC LANES:")
     for i, lane in enumerate(selected, 1):
-        print(f"  {i}. [{lane['domain']}] {lane['id']} — {lane['title']}")
+        print(f"  {i}. [{lane['bucket']}/{lane['domain']}] {lane['id']} — {lane['title']}")
     return selected
 
 
@@ -387,6 +1384,8 @@ def save_topic_history(posts):
             "created_at": stamp,
             "lane_id": post.get("topic_lane", ""),
             "topic": post.get("topic", ""),
+            "domain": post.get("topic_domain", ""),
+            "bucket": post.get("topic_bucket", ""),
             "anchors": post.get("experience_anchor", []),
             "provocative": bool(post.get("provocative")),
         })
@@ -690,7 +1689,7 @@ def make_prompt(trends, previous_posts, selected_lanes, topic_history):
 
     history_text = "\n\n--- PREVIOUS POST ---\n".join(previous_posts[:40])
     lane_text = "\n".join(
-        f"POST {i}: lane_id={lane['id']} | domain={lane['domain']} | title={lane['title']} | verified anchors={','.join(lane['anchors'])} | angle={lane['angle']}"
+        f"POST {i}: lane_id={lane['id']} | bucket={lane['bucket']} | domain={lane['domain']} | title={lane['title']} | verified anchors={','.join(lane['anchors'])} | angle={lane['angle']}"
         for i, lane in enumerate(selected_lanes, start=1)
     )
     persistent_history_text = "\n".join(
@@ -716,18 +1715,19 @@ THE FOUR TOPICS HAVE ALREADY BEEN CHOSEN BY CODE. YOU MUST USE THEM EXACTLY:
 
 HARD TOPIC RULES:
 - Post 1 must use POST 1 lane above, Post 2 must use POST 2 lane, etc
-- return the exact lane_id in a field called "topic_lane"
-- do not replace a selected lane with stakeholder management, automation, scope control or another familiar fallback
-- the selected lane is the main subject; other PM concepts may appear only as supporting context
+- return the exact lane_id in "topic_lane", exact domain in "topic_domain", and exact bucket in "topic_bucket"
+- the selected lane is the main subject; do not drag it back to stakeholders, automation, development or scope unless that is the selected lane
 - each post must feel materially different from the other three in subject, problem, hook and takeaway
-- at most ONE post in the batch may be primarily about AI or automation
-- at most ONE post in the batch may be primarily about stakeholders/governance
+- CORE PM fundamentals are the default
+- specialized development / AI / automation / design / product / marketing topics appear only when code explicitly selected an adjacent lane
+- NEVER turn a core PM topic into a software-development post just because Matvei has web experience
 
 THIS IS THE MOST IMPORTANT RULE:
-Every candidate must start from ONE OR MORE verified Matvei experience anchors A1–A17 above.
+The SELECTED PM TOPIC comes first. Matvei's verified experience is evidence and perspective, not the topic generator.
+Every candidate must still be traceable to ONE OR MORE verified experience anchors A1–A17, but do not force the anchor to dominate the post.
+It is completely fine to write about a basic PM concept such as risk, milestones, estimation, handover, reporting, prioritization or project health and use Matvei's experience only to make the take practical and credible.
 Do not start from a random trend and then force Matvei into it.
-Do not start from a generic PM topic and pretend Matvei experienced it.
-First choose a real experience anchor. Then extract a useful, interesting thesis from it.
+Do not invent personal experience. If the anchor does not justify a first-person claim, write the thesis as an operational judgment instead.
 
 EXACT EDITORIAL MIX — FOLLOW THIS, DO NOT RANDOMIZE:
 
@@ -744,18 +1744,17 @@ POST 2 — PROVOCATIVE EXPERT TAKE
 - challenge another conventional PM belief, ritual, habit or management instinct
 - still practical, evidence-led and professional
 
-POST 3 — PRACTICAL EXPERIENCE-LED POST
+POST 3 — PRACTICAL PM FUNDAMENTAL
 - provocative = false
-- unpack a real delivery lesson, trade-off, failure mode, operating principle or decision pattern from Matvei's experience
-- preferably use a concrete situation type: scope, resources, dependencies, QA, stakeholder management, estimation, project economics, design/dev coordination, mentoring or delivery under parallel load
+- explain the selected project-management concept through a concrete operating principle, trade-off, failure mode or decision pattern
+- basic PM topics are GOOD: planning, risk, issues, milestones, estimates, changes, reporting, quality, handover, priorities, capacity, documentation, roles, project health, closure and similar fundamentals
+- practical does not mean software-specific
 
-POST 4 — EXPERTISE / SYSTEMS POST
+POST 4 — EXPERT PM FUNDAMENTAL
 - provocative = false
-- choose either:
-  a) AI / automation / process design grounded in A15–A17, OR
-  b) another strong delivery topic grounded in a DIFFERENT anchor, OR
-  c) a current trend ONLY when it directly intersects with a verified Matvei experience anchor
-- if the trend connection is weak, ignore the trend completely
+- make the selected topic useful to an experienced PM, not a textbook definition
+- if code selected an adjacent topic, use it; otherwise stay firmly in core project management
+- trend evidence is optional seasoning only and must never replace the selected PM topic
 
 PROVOCATION RULES:
 - EXACTLY 2 of the 4 posts must have "provocative": true
@@ -785,23 +1784,38 @@ Without explicitly saying "hire me", the four-post batch should collectively sig
 - process and automation literacy
 - ability to learn from failures rather than hide them
 
-TOPIC PRIORITY:
-Prefer these areas because they map directly to Matvei's actual work:
-1. scope and change control
-2. project economics, sold hours, overruns and trade-offs
-3. running 6–7 projects without pretending all are equally important
-4. dependency management across design / engineering / marketing
-5. turning one-line asks into decision-ready plans
-6. estimating with specialists rather than "estimating for them"
-7. stakeholder complexity and decision ownership
-8. QA and release responsibility
-9. what product thinking looks like from a delivery background
-10. what agency PMs learn about constraints that product teams can use
-11. AI automation where deterministic rules beat model judgment
-12. failure modes in AI-assisted PM workflows
-13. mentoring and building PM autonomy
-14. multi-market / multi-stream coordination
-15. when process reduces friction vs when process becomes theatre
+EDITORIAL DIRECTION:
+The feed should feel like a very broad, intelligent exploration of project management — not a feed about software delivery, stakeholders or automation.
+
+Core PM territory includes, among many others:
+- project initiation and charters
+- objectives and success criteria
+- scope and out-of-scope
+- assumptions, constraints and unknowns
+- requirements and acceptance
+- estimation and uncertainty
+- planning and replanning
+- scheduling, milestones and critical path
+- dependencies and handoffs
+- risks, issues and escalation
+- decisions and decision rights
+- change control
+- roles, governance and sponsorship
+- communication and meetings
+- documentation and project memory
+- status reporting, forecasting and project health
+- quality and acceptance
+- handover and closure
+- retrospectives and lessons learned
+- budget, project economics and contingency
+- resources, capacity and workload
+- prioritization and portfolio thinking
+- team dynamics, conflict, delegation and mentoring
+- vendors and external dependencies
+- client / commercial judgment
+- uncertainty and contingency
+
+Do not keep returning to the same five "safe" themes. Variety is a hard requirement.
 
 DO NOT DEFAULT TO:
 - generic productivity advice
@@ -818,6 +1832,9 @@ DEDUPLICATION:
 - do NOT revisit blocked topics as the main idea
 - if a candidate feels semantically similar to a previous post, discard it and generate another
 - different wording is NOT enough; the underlying idea must be different
+- avoid using the same topic family repeatedly across runs even when lane IDs differ
+- if recent history contains several posts from one family, prefer a genuinely different PM area
+- development, automation and stakeholder topics must not become fallback themes
 
 FACT-CHECK RULES — MANDATORY:
 - personal-experience facts must be supported by VERIFIED MATVEI EXPERIENCE
@@ -879,6 +1896,8 @@ Return VALID JSON ONLY:
     {{
       "provocative": true,
       "topic_lane": "exact selected lane_id",
+      "topic_domain": "exact selected domain",
+      "topic_bucket": "exact selected bucket",
       "experience_anchor": ["A5"],
       "category": "pm_expertise | practical | systems | trend",
       "topic": "internal topic",
@@ -1008,6 +2027,17 @@ def generate_candidates(prompt, selected_lanes):
                     print(last_error)
                     continue
 
+                expected_domains = [x["domain"] for x in selected_lanes]
+                returned_domains = [p.get("topic_domain") for p in posts]
+                expected_buckets = [x["bucket"] for x in selected_lanes]
+                returned_buckets = [p.get("topic_bucket") for p in posts]
+                if returned_domains != expected_domains or returned_buckets != expected_buckets:
+                    last_error = RuntimeError(
+                        f"Model ignored required topic domain/bucket. Expected {list(zip(expected_domains, expected_buckets))}, got {list(zip(returned_domains, returned_buckets))}"
+                    )
+                    print(last_error)
+                    continue
+
                 # Also enforce that each selected lane uses only verified compatible anchors.
                 lane_map = {x["id"]: set(x["anchors"]) for x in selected_lanes}
                 bad_lane_anchor = False
@@ -1071,7 +2101,7 @@ MANDATORY RULES:
 10. Carousel copy must match the corrected post and the same factual standard.
 11. The carousel MUST contain 5 to 8 slides. Never return fewer than 5 slides.
 12. Provocative posts may challenge assumptions, but must not become ragebait or universal claims unsupported by experience.
-13. Preserve "provocative", "topic_lane" and "experience_anchor" fields exactly.
+13. Preserve "provocative", "topic_lane", "topic_domain", "topic_bucket" and "experience_anchor" fields exactly.
 14. Do not change the subject into stakeholder management, automation or another familiar PM fallback.
 
 Return VALID JSON ONLY:
