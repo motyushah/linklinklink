@@ -84,5 +84,47 @@
       "A8"
     ],
     "provocative": false
+  },
+  {
+    "run_id": "35235643090",
+    "created_at": "2026-09-17T14:49:10Z",
+    "lane_id": "governance_design",
+    "topic": "governance is a delivery design problem",
+    "anchors": [
+      "A10"
+    ],
+    "provocative": true
+  },
+  {
+    "run_id": "35235643090",
+    "created_at": "2026-09-17T14:49:10Z",
+    "lane_id": "rules_vs_llm",
+    "topic": "rules should decide; LLMs should phrase",
+    "anchors": [
+      "A16"
+    ],
+    "provocative": true
+  },
+  {
+    "run_id": "35235643090",
+    "created_at": "2026-09-17T14:49:10Z",
+    "lane_id": "single_source_truth",
+    "topic": "a source of truth is useless if nobody trusts the update path",
+    "anchors": [
+      "A2",
+      "A8"
+    ],
+    "provocative": false
+  },
+  {
+    "run_id": "35235643090",
+    "created_at": "2026-09-17T14:49:10Z",
+    "lane_id": "timeline_risk_points",
+    "topic": "a timeline should show where it can break",
+    "anchors": [
+      "A1",
+      "A8"
+    ],
+    "provocative": false
   }
 ]
