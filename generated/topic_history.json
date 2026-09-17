@@ -409,5 +409,66 @@
     "provocative": false,
     "hook_style": "direct_claim",
     "opening": "a fifty-page project plan with color-coded milestones six months out is comforting fiction designed to keep stakeholders from panicking"
+  },
+  {
+    "run_id": "35251208894",
+    "created_at": "2026-09-17T17:15:50Z",
+    "lane_id": "discovery_bias",
+    "topic": "good discovery tries to disprove the convenient story",
+    "domain": "discovery",
+    "bucket": "adjacent",
+    "anchors": [
+      "A1",
+      "A14"
+    ],
+    "provocative": true,
+    "hook_style": "failure_mode",
+    "opening": "we spend three weeks running discovery sessions only to build exactly what the client's most vocal VP hallucinated on a flight back from London"
+  },
+  {
+    "run_id": "35251208894",
+    "created_at": "2026-09-17T17:15:50Z",
+    "lane_id": "stakeholder_interest_power",
+    "topic": "not every stakeholder needs the same communication",
+    "domain": "stakeholders",
+    "bucket": "core",
+    "anchors": [
+      "A10",
+      "A3"
+    ],
+    "provocative": true,
+    "hook_style": "counterfactual",
+    "opening": "what if we stopped inviting all twenty-five stakeholders to every single status meeting and actually let them do their jobs"
+  },
+  {
+    "run_id": "35251208894",
+    "created_at": "2026-09-17T17:15:50Z",
+    "lane_id": "percent_complete",
+    "topic": "percent complete can hide the hardest 10 percent",
+    "domain": "reporting",
+    "bucket": "core",
+    "anchors": [
+      "A5",
+      "A6",
+      "A9"
+    ],
+    "provocative": false,
+    "hook_style": "micro_scene",
+    "opening": "the progress bar on the dashboard proudly shows 90% complete, yet the launch has been delayed for the third week in a row"
+  },
+  {
+    "run_id": "35251208894",
+    "created_at": "2026-09-17T17:15:50Z",
+    "lane_id": "risk_is_future",
+    "topic": "a risk is useful before it becomes a problem",
+    "domain": "risk",
+    "bucket": "core",
+    "anchors": [
+      "A1",
+      "A8"
+    ],
+    "provocative": false,
+    "hook_style": "cause_effect",
+    "opening": "filling a spreadsheet with hypothetical disasters actually makes your team less prepared when a real crisis hits"
   }
 ]
