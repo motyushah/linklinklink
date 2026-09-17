@@ -292,5 +292,61 @@
     "provocative": false,
     "hook_style": "numberless_pattern",
     "opening": "you cannot brief a motion designer the same way you brief a UI designer, and you definitely cannot brief either of them using developer requirements"
+  },
+  {
+    "run_id": "35240190895",
+    "created_at": "2026-09-17T15:31:57Z",
+    "lane_id": "project_charter_lite",
+    "topic": "most projects need a one-page charter before they need a giant plan",
+    "domain": "initiation",
+    "bucket": "core",
+    "anchors": [
+      "A1"
+    ],
+    "provocative": true,
+    "hook_style": "reframe",
+    "opening": "a project charter is not a bureaucratic hurdle – it is the only thing standing between you and six months of confusion"
+  },
+  {
+    "run_id": "35240190895",
+    "created_at": "2026-09-17T15:31:57Z",
+    "lane_id": "vendor_handover",
+    "topic": "vendor handover needs operational ownership",
+    "domain": "vendor_external",
+    "bucket": "core",
+    "anchors": [
+      "A3"
+    ],
+    "provocative": true,
+    "hook_style": "one_sentence_story",
+    "opening": "the external agency just hit the final milestone and sent over a zip file of assets, but nobody on the internal team knows how to actually deploy the system"
+  },
+  {
+    "run_id": "35240190895",
+    "created_at": "2026-09-17T15:31:57Z",
+    "lane_id": "critical_path_focus",
+    "topic": "not every late task threatens the project date",
+    "domain": "critical_path",
+    "bucket": "core",
+    "anchors": [
+      "A8"
+    ],
+    "provocative": false,
+    "hook_style": "rule_of_thumb",
+    "opening": "if a task isn't on the critical path, its delay is noise, not a disaster"
+  },
+  {
+    "run_id": "35240190895",
+    "created_at": "2026-09-17T15:31:57Z",
+    "lane_id": "plan_owner",
+    "topic": "if nobody knows who maintains the plan, there is no plan",
+    "domain": "planning",
+    "bucket": "core",
+    "anchors": [
+      "A10"
+    ],
+    "provocative": false,
+    "hook_style": "decision",
+    "opening": "you have to decide early: are you managing the project as a facilitator of the plan, or are you the sole custodian of the truth"
   }
 ]
