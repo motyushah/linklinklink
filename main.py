@@ -222,6 +222,35 @@ VALID_ANCHORS = {
     "A10", "A11", "A12", "A13", "A14", "A15", "A16", "A17"
 }
 
+HOOK_STYLES = [
+    {"id":"metaphor", "rule":"open with one fresh concrete metaphor or physical image; never reuse parent/baby/backflip/cortisol metaphors"},
+    {"id":"direct_claim", "rule":"open with a short confident PM claim, without 'hot take' or 'unpopular opinion'"},
+    {"id":"question", "rule":"open with one specific question that creates tension; answer it quickly"},
+    {"id":"micro_scene", "rule":"open inside a tiny recognizable project scene or moment, without pretending it literally happened to Matvei"},
+    {"id":"reframe", "rule":"open by redefining a familiar PM concept in a surprising but defensible way"},
+    {"id":"contrast", "rule":"open with a crisp contrast between two things people often confuse"},
+    {"id":"rule_of_thumb", "rule":"open with a practical rule of thumb, then explain where it helps and where it breaks"},
+    {"id":"failure_mode", "rule":"open with a specific project failure mode, not a personal anecdote"},
+    {"id":"tiny_list", "rule":"open with a compact 2-3 item pattern, then build one thesis from it"},
+    {"id":"counterfactual", "rule":"open with a 'what if' or counterfactual project situation"},
+    {"id":"object_lesson", "rule":"open with an everyday object or system and connect it to PM without forcing the analogy"},
+    {"id":"definition", "rule":"open with a deliberately plain one-line definition in Matvei's voice, then complicate it"},
+    {"id":"symptom", "rule":"open with a symptom that tells you a project has a deeper problem"},
+    {"id":"decision", "rule":"open with a decision a PM has to make, not with a general observation"},
+    {"id":"myth_without_label", "rule":"open by stating a common belief and immediately showing the catch; do not say 'myth'"},
+    {"id":"numberless_pattern", "rule":"open with a recurring pattern from project work, with no CV metrics or statistics"},
+    {"id":"one_sentence_story", "rule":"open with a one-sentence generic project story, clearly illustrative rather than autobiographical"},
+    {"id":"provocative_plain", "rule":"open with a mildly provocative plain sentence, no theatrics, no ragebait"},
+    {"id":"cause_effect", "rule":"open with an unexpected cause-and-effect relationship in project work"},
+    {"id":"anti_template", "rule":"open in a form that does not resemble any other assigned hook in this batch; keep it natural"},
+]
+
+FORBIDDEN_OPENINGS = (
+    "we love", "we all", "let's talk", "lets talk", "here's the thing", "heres the thing",
+    "hot take", "unpopular opinion", "as a project manager", "as a pm", "i've managed",
+    "ive managed", "in my experience", "one thing i've learned", "one thing ive learned"
+)
+
 
 # A deliberately broad editorial map. Python picks the lanes BEFORE Gemini writes,
 # so the model cannot keep falling back to the same stakeholder/automation themes.
@@ -1372,6 +1401,27 @@ def choose_topic_lanes(history):
     return selected
 
 
+def choose_hook_styles(history):
+    """Pick four structurally different openings and avoid recent hook templates."""
+    recent = [x.get("hook_style") for x in history[-32:] if x.get("hook_style")]
+    blocked = set(recent[-16:])
+    available = [x for x in HOOK_STYLES if x["id"] not in blocked]
+    if len(available) < DRAFT_COUNT:
+        available = HOOK_STYLES[:]  # long-run fallback; still unique inside this batch
+    rng = random.SystemRandom()
+    selected = rng.sample(available, DRAFT_COUNT)
+    print("SELECTED HOOK STYLES:")
+    for i, hook in enumerate(selected, 1):
+        print(f"  {i}. {hook['id']} — {hook['rule']}")
+    return selected
+
+
+def _opening(text, limit=180):
+    text = (text or "").strip()
+    first = re.split(r"\n\s*\n|\n", text, maxsplit=1)[0]
+    return re.sub(r"\s+", " ", first).strip()[:limit]
+
+
 def save_topic_history(posts):
     """Persist generated themes in the repo, so deleting a Buffer draft does not erase memory."""
     TOPIC_HISTORY_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -1388,6 +1438,8 @@ def save_topic_history(posts):
             "bucket": post.get("topic_bucket", ""),
             "anchors": post.get("experience_anchor", []),
             "provocative": bool(post.get("provocative")),
+            "hook_style": post.get("hook_style", ""),
+            "opening": _opening(post.get("text", "")),
         })
     # Enough history for a long cooldown, without growing forever.
     TOPIC_HISTORY_PATH.write_text(
@@ -1681,7 +1733,7 @@ def get_recent_buffer_posts(limit=50):
         print("Could not read recent Buffer posts for dedupe:", e)
         return []
 
-def make_prompt(trends, previous_posts, selected_lanes, topic_history):
+def make_prompt(trends, previous_posts, selected_lanes, selected_hooks, topic_history):
     trend_text = "\n\n".join(
         f"SOURCE: {x['source']}\nTITLE: {x['title']}\nURL: {x['url']}\nDESCRIPTION: {x['description']}"
         for x in trends
@@ -1689,12 +1741,12 @@ def make_prompt(trends, previous_posts, selected_lanes, topic_history):
 
     history_text = "\n\n--- PREVIOUS POST ---\n".join(previous_posts[:40])
     lane_text = "\n".join(
-        f"POST {i}: lane_id={lane['id']} | bucket={lane['bucket']} | domain={lane['domain']} | title={lane['title']} | verified anchors={','.join(lane['anchors'])} | angle={lane['angle']}"
+        f"POST {i}: lane_id={lane['id']} | bucket={lane['bucket']} | domain={lane['domain']} | title={lane['title']} | angle={lane['angle']} | HOOK_STYLE={selected_hooks[i-1]['id']} | HOOK_RULE={selected_hooks[i-1]['rule']}"
         for i, lane in enumerate(selected_lanes, start=1)
     )
     persistent_history_text = "\n".join(
-        f"- {x.get('lane_id','')}: {x.get('topic','')}"
-        for x in topic_history[-60:]
+        f"- lane={x.get('lane_id','')} | hook={x.get('hook_style','')} | topic={x.get('topic','')} | opening={x.get('opening','')}"
+        for x in topic_history[-80:]
     )
 
     return f"""
@@ -1723,11 +1775,15 @@ HARD TOPIC RULES:
 - NEVER turn a core PM topic into a software-development post just because Matvei has web experience
 
 THIS IS THE MOST IMPORTANT RULE:
-The SELECTED PM TOPIC comes first. Matvei's verified experience is evidence and perspective, not the topic generator.
-Every candidate must still be traceable to ONE OR MORE verified experience anchors A1–A17, but do not force the anchor to dominate the post.
-It is completely fine to write about a basic PM concept such as risk, milestones, estimation, handover, reporting, prioritization or project health and use Matvei's experience only to make the take practical and credible.
-Do not start from a random trend and then force Matvei into it.
-Do not invent personal experience. If the anchor does not justify a first-person claim, write the thesis as an operational judgment instead.
+The SELECTED PM TOPIC comes first. Matvei's CV is PRIVATE GROUNDING, not copy material.
+The experience_anchor field exists only so the system knows the opinion is compatible with something Matvei has actually done.
+DEFAULT BEHAVIOR: do NOT mention the anchor, employer, client, project, team size, number of stakeholders, number of projects, 15M figure, timelines or other CV metrics in the public post.
+Write the post as expert operational judgment: what tends to work, what breaks, what a PM should notice, what trade-off exists.
+Across the four posts, AT MOST ONE may explicitly refer to Matvei's personal experience, and only when the selected topic genuinely becomes better because of it.
+Never use a CV number or impressive metric as the hook.
+Never use the 25-stakeholder story, 15-person team, 6–7 parallel projects, 15M opens, 30+ projects or seven-automations-in-seven-days as recurring proof points. Treat them as internal evidence, not recurring content.
+Do not start from a random trend and force Matvei into it.
+Do not invent personal experience.
 
 EXACT EDITORIAL MIX — FOLLOW THIS, DO NOT RANDOMIZE:
 
@@ -1765,13 +1821,13 @@ PROVOCATION RULES:
 - no cheap contrarianism
 
 EXPERIENCE RULES:
-- every post must output "experience_anchor" using one or more IDs from A1–A17
+- every post must output "experience_anchor" using one or more IDs from A1–A17, but this metadata is INTERNAL and does not need to appear in the copy
 - every personal factual statement must be supported by those anchors
-- the post may be inspired by an anchor without literally repeating the CV bullet
-- first-person language is welcome when natural: "i've found", "i learned", "the projects where..."
-- do not turn every post into "at my previous company..."
-- the experience should give the idea credibility, not make the post read like a resume
-- across the four candidates, use at least 3 different anchor IDs
+- prefer ZERO explicit CV examples in a post; use operational reasoning instead
+- at most ONE of the four posts may include a concrete first-person work example
+- do not use "i've managed X", "in my experience", employer names, client descriptions or CV metrics as default credibility devices
+- do not turn the feed into four rewrites of the same case study
+- across the four candidates, use at least 3 different anchor IDs internally
 
 JOB-SEARCH POSITIONING:
 Without explicitly saying "hire me", the four-post batch should collectively signal:
@@ -1827,6 +1883,15 @@ DO NOT DEFAULT TO:
 - generic meeting advice
 unless there is a specific, experience-led thesis that could only plausibly come from this background
 
+HOOK DIVERSITY — HARD REQUIREMENT:
+- each post MUST use its assigned HOOK_STYLE from the selected topic line above and return that exact id in "hook_style"
+- the first paragraph must have a visibly different sentence shape from the other three posts
+- NEVER start with: "we love", "we all", "let's talk", "here's the thing", "hot take", "unpopular opinion", "as a project manager", "in my experience", "one thing i've learned"
+- do not start more than one post in a batch with "i"
+- do not use the same rhetorical skeleton across runs, even with different nouns
+- no repeated opening formulas such as "X is not Y", "we love X", or "the problem with X is Y" in multiple posts in the same batch
+- recent persistent openings below are examples to AVOID structurally, not templates to imitate
+
 DEDUPLICATION:
 - do NOT repeat the thesis, hook, metaphor or conclusion of recent Buffer posts below
 - do NOT revisit blocked topics as the main idea
@@ -1852,13 +1917,14 @@ CAPITALIZATION CHECK BEFORE RETURNING:
 
 QUALITY BAR:
 - each post must have ONE precise thesis
-- the thesis should be traceable to real experience
+- the reasoning should sound like someone who has actually delivered projects, without repeatedly proving it with CV anecdotes
 - concrete trade-off > abstract advice
 - operating principle > inspirational lesson
 - specific failure mode > generic best practice
 - tension > listicle
-- if a random PM influencer with no delivery experience could write the same thing, reject it
-- if the post sounds impressive but reveals nothing about how Matvei actually works, reject it
+- practical judgment > autobiography
+- if a random PM influencer could write the same generic advice, reject it
+- if the only thing making the post specific is a recycled CV number, reject it
 
 RECENT BUFFER POSTS — DO NOT REPEAT:
 {history_text if history_text else "No readable Buffer history available. Use the blocked list above."}
@@ -1898,6 +1964,7 @@ Return VALID JSON ONLY:
       "topic_lane": "exact selected lane_id",
       "topic_domain": "exact selected domain",
       "topic_bucket": "exact selected bucket",
+      "hook_style": "exact assigned HOOK_STYLE id",
       "experience_anchor": ["A5"],
       "category": "pm_expertise | practical | systems | trend",
       "topic": "internal topic",
@@ -1917,7 +1984,7 @@ Return VALID JSON ONLY:
 }}
 """
 
-def generate_candidates(prompt, selected_lanes):
+def generate_candidates(prompt, selected_lanes, selected_hooks):
     # Free-tier first. If one model is temporarily overloaded (503/429),
     # the script waits and automatically tries the next one.
     models = [
@@ -2038,6 +2105,30 @@ def generate_candidates(prompt, selected_lanes):
                     print(last_error)
                     continue
 
+                expected_hooks = [x["id"] for x in selected_hooks]
+                returned_hooks = [p.get("hook_style") for p in posts]
+                if returned_hooks != expected_hooks:
+                    last_error = RuntimeError(
+                        f"Model ignored required hook styles. Expected {expected_hooks}, got {returned_hooks}"
+                    )
+                    print(last_error)
+                    continue
+
+                openings = [_opening(p.get("text", "")).lower() for p in posts]
+                if any(any(op.startswith(bad) for bad in FORBIDDEN_OPENINGS) for op in openings):
+                    last_error = RuntimeError(f"Model used a forbidden/repetitive opening: {openings}")
+                    print(last_error)
+                    continue
+                first_words = [" ".join(re.findall(r"[a-zA-Z']+", op)[:3]) for op in openings]
+                if len(set(first_words)) < len(first_words):
+                    last_error = RuntimeError(f"Opening structures are too similar inside the batch: {first_words}")
+                    print(last_error)
+                    continue
+                if sum(1 for op in openings if op.startswith("i ") or op == "i") > 1:
+                    last_error = RuntimeError("More than one post starts with 'i'")
+                    print(last_error)
+                    continue
+
                 # Also enforce that each selected lane uses only verified compatible anchors.
                 lane_map = {x["id"]: set(x["anchors"]) for x in selected_lanes}
                 bad_lane_anchor = False
@@ -2089,19 +2180,19 @@ CANDIDATE JSON:
 Check every claim and the underlying thesis.
 
 MANDATORY RULES:
-1. The candidate MUST be genuinely grounded in the listed experience_anchor IDs.
-2. Every factual claim about Matvei's work must be directly supported by VERIFIED MATVEI EXPERIENCE.
-3. Do not infer extra client details, results, motives, team sizes, timelines or outcomes from an anchor.
+1. The experience_anchor IDs are INTERNAL grounding metadata. The public copy does NOT need to mention them or retell the CV case.
+2. If the copy does make a factual claim about Matvei's work, it must be directly supported by VERIFIED MATVEI EXPERIENCE.
+3. Do not inject a CV anecdote, employer, client, metric, team size or impressive number during fact-checking if the draft did not need one. Prefer operational judgment without autobiography.
 4. External factual claims are allowed only if supported by VERIFIED FACT BASE or supplied TREND EVIDENCE.
 5. If an unsupported detail is nonessential, remove it or rewrite it as clearly subjective judgment.
 6. If the main thesis depends on invented or unsupported experience, set approved=false rather than fabricating a replacement story.
-7. Keep the core experience-led thesis and Matvei's voice.
+7. Keep the core PM thesis and Matvei's voice. Do not make the post more autobiographical.
 8. Correct every proper noun / official name / acronym.
 9. Keep lowercase ordinary prose and no period at the end of paragraphs.
 10. Carousel copy must match the corrected post and the same factual standard.
 11. The carousel MUST contain 5 to 8 slides. Never return fewer than 5 slides.
 12. Provocative posts may challenge assumptions, but must not become ragebait or universal claims unsupported by experience.
-13. Preserve "provocative", "topic_lane", "topic_domain", "topic_bucket" and "experience_anchor" fields exactly.
+13. Preserve "provocative", "topic_lane", "topic_domain", "topic_bucket", "hook_style" and "experience_anchor" fields exactly.
 14. Do not change the subject into stakeholder management, automation or another familiar PM fallback.
 
 Return VALID JSON ONLY:
@@ -2111,6 +2202,7 @@ Return VALID JSON ONLY:
   "candidate": {{
     "provocative": true,
     "topic_lane": "exact original lane_id",
+    "hook_style": "exact original hook_style",
     "experience_anchor": ["A5"],
     "category": "...",
     "topic": "...",
@@ -2170,6 +2262,7 @@ Return VALID JSON ONLY:
                     continue
                 if corrected and corrected.get("text"):
                     corrected["topic_lane"] = candidate.get("topic_lane", corrected.get("topic_lane", ""))
+                    corrected["hook_style"] = candidate.get("hook_style", corrected.get("hook_style", ""))
                     anchors = corrected.get("experience_anchor", [])
                     if isinstance(anchors, str):
                         anchors = [anchors]
@@ -2421,9 +2514,11 @@ def main():
     previous_posts = get_recent_buffer_posts()
     topic_history = load_topic_history()
     selected_lanes = choose_topic_lanes(topic_history)
+    selected_hooks = choose_hook_styles(topic_history)
     posts = generate_candidates(
-        make_prompt(trends, previous_posts, selected_lanes, topic_history),
-        selected_lanes
+        make_prompt(trends, previous_posts, selected_lanes, selected_hooks, topic_history),
+        selected_lanes,
+        selected_hooks
     )
 
     print("Running mandatory fact-check + capitalization pass...")
