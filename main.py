@@ -77,30 +77,86 @@ The post must contain a real PM idea. Humor is packaging, not the substance.
 
 PROFILE = """
 Matvei Shakhurdin is a project / delivery manager with 4+ years of experience.
-His real background includes design and creative production, web development,
-marketing, fintech, designers, developers, stakeholder communication,
-team workload, limited resources, process setup and automation.
 
-CONTENT POSITIONING GOAL:
-The feed should make an experienced hiring manager think:
-"this person understands how delivery actually works"
-without Matvei sounding like he is begging for a job.
+POSITIONING GOAL:
+Every post must primarily demonstrate how Matvei thinks and works as an experienced PM / delivery manager.
+The feed is not a random PM magazine and not a trend feed.
+It is a public portfolio of judgment.
 
-Good expertise signals include:
-- turning vague stakeholder asks into workable scope
-- prioritization and trade-offs under limited time / people / budget
-- resource and workload planning
-- delivery risk, dependencies, escalation and expectation management
-- QA and release discipline
-- cross-functional work between design, development, marketing and business
-- process design that removes friction instead of adding ceremony
-- practical AI / automation for PM work
-- retrospectives, failure modes and what a PM would change next time
-- product thinking from an agency / delivery background
-- communicating difficult constraints clearly without creating drama
+A strong hiring manager should repeatedly see evidence of:
+- turning ambiguity into scope, owners, dependencies and dates
+- running several streams at once without losing the economics
+- making trade-offs under limited time, people and budget
+- managing scope change commercially, not emotionally
+- coordinating design, engineering, marketing, legal, finance and vendors
+- understanding enough engineering to challenge estimates and discuss scope directly
+- understanding design production deeply enough to sequence 2D, identity, UI, motion and 3D work
+- managing risks, dependencies, approvals, QA and release discipline
+- building lightweight processes and automations instead of adding ceremony
+- communicating constraints clearly and de-escalating conflict
+- mentoring and helping teams become more autonomous
 
-Prefer specific operational insights, trade-offs and anti-patterns over textbook definitions.
-Never invent employers, numbers, results, team sizes or personal stories.
+The post does NOT need to sound like a CV bullet.
+It should turn real experience into an observation, argument, useful model, anti-pattern or story.
+But its core thesis must be traceable to Matvei's verified experience below.
+"""
+
+EXPERIENCE_FACTS = """
+VERIFIED MATVEI EXPERIENCE — THE ONLY PERSONAL EXPERIENCE FACTS YOU MAY STATE AS FACT:
+
+A1 — ambiguity into delivery plan
+At Whale Studio, Matvei turned one-line business requests into workable delivery plans by running discovery, collecting estimates from discipline leads, building timelines with named risk points and defining decision ownership.
+
+A2 — parallel delivery
+He ran 6–7 concurrent projects, each with its own backlog, resource plan, milestones and budget.
+
+A3 — cross-functional coordination
+He coordinated teams of up to 15 across design, copy, marketing, legal, finance and external vendors, sequencing dependencies between them.
+
+A4 — multi-market program delivery
+He managed three large parallel projects for a global food producer across five GCC markets and Uzbekistan over 18 months, with separate social, influencer, paid and content streams.
+
+A5 — project economics and scope control
+He tracked hours against sold sprints weekly, flagged overruns before delivery and converted scope expansion into documented, approved change requests.
+
+A6 — web delivery with engineering
+He delivered web-development projects end to end: requirements, estimation with engineering, sprint planning, QA and launch, with enough technical depth to challenge estimates and discuss scope directly with developers.
+
+A7 — design-production dependencies
+He worked across 2D and identity, web and UI, motion and 3D, briefing disciplines in their own terms and sequencing dependencies between them.
+
+A8 — complex program dependencies
+He ran functional programs made of interlocking streams with separate timelines, owners and approval chains.
+
+A9 — enterprise portfolio
+At Pragmatica, he delivered 30+ enterprise projects across banking, cybersecurity, mobility, telecom and media, sometimes running 6–7 in parallel, from short requests to year-long productions.
+
+A10 — long program with many stakeholders
+He led a 12-month financial-literacy board-game program for a top-5 Eastern European retail bank with a 15-person team and 25 stakeholders across five client departments, contractors and invited experts, owning process, timeline, budget and delivery.
+
+A11 — WebView games / product-like delivery
+He managed three WebView games inside the same bank's mobile app across two delivery organizations as a de facto Product Manager. One game was opened 15M+ times.
+
+A12 — commercial negotiation
+He secured additional project funding by documenting scope expansion, preparing the commercial case and running up to five rounds of negotiation with client decision-makers.
+
+A13 — mentoring
+He mentored a Junior PM from assisted execution to independently managing and closing client projects.
+
+A14 — customer discovery
+In an early-stage B2B distribution startup, he managed a 4-person team and ran structured customer-discovery interviews that fed back into positioning.
+
+A15 — PM automation portfolio
+He built seven working n8n automations in seven days for PM work: deadline digests, meeting notes into Jira tickets, workload snapshots, sprint carryover counts, status ping-pong detection, intake brief validation and weekly client-update drafts.
+
+A16 — deterministic automation principle
+In those automations, he kept decision logic in code and used the LLM mainly for phrasing, so risk classification stayed rule-based rather than model-guessed.
+
+A17 — automation failure lesson
+He tested normal, edge and failure cases and found an LLM could pass a junk task name to a client as fact; after that, filtering moved out of the prompt and into code.
+
+Do not invent another employer, client, metric, result, team size, timeline, quote or personal story.
+Do not inflate an anchor beyond the wording above.
 """
 
 PM_FACTS = """
@@ -146,6 +202,12 @@ Do NOT create another post whose main topic is any of the following:
 These themes may be mentioned in passing only if they are necessary to a genuinely new idea.
 The new post must have a materially different thesis, hook and takeaway.
 """
+
+VALID_ANCHORS = {
+    "A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9",
+    "A10", "A11", "A12", "A13", "A14", "A15", "A16", "A17"
+}
+
 
 def download(url, path):
     if path.exists():
@@ -445,85 +507,169 @@ def make_prompt(trends, previous_posts):
 
 {PROFILE}
 
+{EXPERIENCE_FACTS}
+
 {PM_FACTS}
 
 {BLOCKED_OR_ALREADY_USED_TOPICS}
 
 Create exactly {DRAFT_COUNT} different LinkedIn post candidates.
 
-CONTENT MIX:
-- 2 candidates: genuinely interesting project-management topics that demonstrate senior delivery judgment
-- 1 candidate: practical operations / automation / AI / process design
-- 1 candidate: trend-aware, but only if the trend creates a real PM/work insight; otherwise make another strong PM post
+THIS IS THE MOST IMPORTANT RULE:
+Every candidate must start from ONE OR MORE verified Matvei experience anchors A1–A17 above.
+Do not start from a random trend and then force Matvei into it.
+Do not start from a generic PM topic and pretend Matvei experienced it.
+First choose a real experience anchor. Then extract a useful, interesting thesis from it.
 
-TOPIC RULES:
-- do NOT repeat the thesis, hook, metaphor or conclusion of any recent Buffer post shown below
-- do NOT revisit blocked topics above as the main idea
-- avoid textbook explainers unless there is a surprising misconception, historical twist or practical contradiction
-- prioritize topics that reveal judgment: trade-offs, prioritization, scope, risk, resources, stakeholder dynamics,
-  QA, dependencies, decision-making, process design, delivery systems, product thinking, AI-assisted PM work
-- a hiring manager should learn something about how Matvei thinks and works from the post
-- the post should still be enjoyable even for someone who is not hiring
+EXACT EDITORIAL MIX — FOLLOW THIS, DO NOT RANDOMIZE:
+
+POST 1 — PROVOCATIVE EXPERT TAKE
+- provocative = true
+- grounded in one verified experience anchor
+- challenge a common PM assumption or comfortable convention
+- provocative means defensible tension, not ragebait
+- make the reader think "huh, that's uncomfortable but fair"
+
+POST 2 — PROVOCATIVE EXPERT TAKE
+- provocative = true
+- use a DIFFERENT experience anchor from Post 1
+- challenge another conventional PM belief, ritual, habit or management instinct
+- still practical, evidence-led and professional
+
+POST 3 — PRACTICAL EXPERIENCE-LED POST
+- provocative = false
+- unpack a real delivery lesson, trade-off, failure mode, operating principle or decision pattern from Matvei's experience
+- preferably use a concrete situation type: scope, resources, dependencies, QA, stakeholder management, estimation, project economics, design/dev coordination, mentoring or delivery under parallel load
+
+POST 4 — EXPERTISE / SYSTEMS POST
+- provocative = false
+- choose either:
+  a) AI / automation / process design grounded in A15–A17, OR
+  b) another strong delivery topic grounded in a DIFFERENT anchor, OR
+  c) a current trend ONLY when it directly intersects with a verified Matvei experience anchor
+- if the trend connection is weak, ignore the trend completely
+
+PROVOCATION RULES:
+- EXACTLY 2 of the 4 posts must have "provocative": true
+- the other 2 must have "provocative": false
+- provocation should come from a strong thesis, not swearing, insults or fake certainty
+- good examples of structure: "X is often treated as Y. in practice, I think the real problem is Z"
+- do not attack PMs, clients, developers, designers or companies as groups
+- no cheap contrarianism
+
+EXPERIENCE RULES:
+- every post must output "experience_anchor" using one or more IDs from A1–A17
+- every personal factual statement must be supported by those anchors
+- the post may be inspired by an anchor without literally repeating the CV bullet
+- first-person language is welcome when natural: "i've found", "i learned", "the projects where..."
+- do not turn every post into "at my previous company..."
+- the experience should give the idea credibility, not make the post read like a resume
+- across the four candidates, use at least 3 different anchor IDs
+
+JOB-SEARCH POSITIONING:
+Without explicitly saying "hire me", the four-post batch should collectively signal:
+- senior delivery judgment
+- commercial awareness
+- cross-functional leadership
+- comfort with design and engineering
+- ability to structure ambiguity
+- risk / scope / resource thinking
+- process and automation literacy
+- ability to learn from failures rather than hide them
+
+TOPIC PRIORITY:
+Prefer these areas because they map directly to Matvei's actual work:
+1. scope and change control
+2. project economics, sold hours, overruns and trade-offs
+3. running 6–7 projects without pretending all are equally important
+4. dependency management across design / engineering / marketing
+5. turning one-line asks into decision-ready plans
+6. estimating with specialists rather than "estimating for them"
+7. stakeholder complexity and decision ownership
+8. QA and release responsibility
+9. what product thinking looks like from a delivery background
+10. what agency PMs learn about constraints that product teams can use
+11. AI automation where deterministic rules beat model judgment
+12. failure modes in AI-assisted PM workflows
+13. mentoring and building PM autonomy
+14. multi-market / multi-stream coordination
+15. when process reduces friction vs when process becomes theatre
+
+DO NOT DEFAULT TO:
+- generic productivity advice
+- generic leadership quotes
+- "communication is important"
+- "AI is changing everything"
+- generic Scrum / Agile / Kanban explainers
+- generic remote-work takes
+- generic meeting advice
+unless there is a specific, experience-led thesis that could only plausibly come from this background
+
+DEDUPLICATION:
+- do NOT repeat the thesis, hook, metaphor or conclusion of recent Buffer posts below
+- do NOT revisit blocked topics as the main idea
+- if a candidate feels semantically similar to a previous post, discard it and generate another
+- different wording is NOT enough; the underlying idea must be different
 
 FACT-CHECK RULES — MANDATORY:
-- every factual claim must be supported by the VERIFIED FACT BASE or by the TREND EVIDENCE supplied below
-- a title/headline alone does not justify inventing details behind it
-- if a claim cannot be supported from the supplied evidence, remove it or rewrite it as clearly subjective opinion
-- never invent studies, statistics, dates, quotes, company announcements, product capabilities or historical details
+- personal-experience facts must be supported by VERIFIED MATVEI EXPERIENCE
+- external factual claims must be supported by VERIFIED FACT BASE or TREND EVIDENCE below
+- if support is missing, remove the claim or frame it explicitly as opinion
+- never invent studies, statistics, dates, quotes, company announcements, product capabilities or history
 - never create a source URL that was not supplied
-- when using a trend, source URLs must point to the evidence actually used
-- when using only personal reasoning / PM opinion with no factual external claim, sources may be an empty list
-- separate facts from interpretations: factual language must be supportable; opinions can be framed as opinions
+- opinion and operational judgment do not need a source, but must be phrased as judgment rather than universal fact
 
 CAPITALIZATION CHECK BEFORE RETURNING:
-- ordinary prose stays lowercase by default
-- proper nouns and official names keep standard capitalization
-- examples: LinkedIn, OpenAI, GitHub, Jira, Scrum, Agile, Kanban, Toyota, Telegram, Tbilisi, Matvei Shakhurdin
-- acronyms stay uppercase: AI, PM, API, SQL, CRM, QA
-- never output "linkedin", "jira", "scrum", "agile", "toyota", "tbilisi" etc when they refer to the proper noun
+- ordinary prose stays lowercase by default, including "i"
+- proper nouns, names, brands, frameworks and acronyms use correct capitalization
+- examples: LinkedIn, OpenAI, GitHub, Jira, Scrum, Agile, Kanban, Toyota, Telegram, Tbilisi, Matvei Shakhurdin, AI, PM, API, SQL, CRM, QA
+- never lowercase a proper noun for style
 
-QUALITY:
-- every post needs one real thought
-- reject anything that sounds like generic PM influencer content
-- interesting > comprehensive
-- specific > motivational
-- useful tension / contradiction / trade-off is better than a generic lesson
-- no AI-slop phrases
+QUALITY BAR:
+- each post must have ONE precise thesis
+- the thesis should be traceable to real experience
+- concrete trade-off > abstract advice
+- operating principle > inspirational lesson
+- specific failure mode > generic best practice
+- tension > listicle
+- if a random PM influencer with no delivery experience could write the same thing, reject it
+- if the post sounds impressive but reveals nothing about how Matvei actually works, reject it
 
 RECENT BUFFER POSTS — DO NOT REPEAT:
 {history_text if history_text else "No readable Buffer history available. Use the blocked list above."}
 
 CAROUSEL:
 For every post create 5–8 slides.
-The carousel should feel like Matvei's existing visual identity:
+Visual identity:
 - 1080×1350
-- Anton-style huge condensed uppercase headline
+- Anton-style huge condensed uppercase headlines
 - thin sans-serif supporting copy
 - huge margins
 - black / white / vivid yellow / cyan / vivid red
 - flat colors, no gradients
 - minimal editorial composition
 - one idea per slide
-- headlines short, preferably under 8 words
+- headline preferably under 8 words
 - body ideally under 35 words
-- proper nouns and acronyms must still be correctly capitalized in body copy
-- do not invent screenshots or fake interfaces
-- if a real screenshot would be required, explain the idea with typography instead
+- proper nouns and acronyms correctly capitalized
+- no fake screenshots or fake interfaces
+- first slide = strong thesis / hook
+- middle slides = reasoning / example / model
+- final slide = conclusion, no begging for engagement
 
-The first slide must be a strong cover.
-The final slide should land the conclusion, not beg for engagement.
-
-TREND EVIDENCE:
+CURRENT TREND EVIDENCE — OPTIONAL RAW MATERIAL ONLY:
 {trend_text}
 
 Return VALID JSON ONLY:
 {{
   "posts": [
     {{
-      "category": "pm_expertise | practical | trend",
+      "provocative": true,
+      "experience_anchor": ["A5"],
+      "category": "pm_expertise | practical | systems | trend",
       "topic": "internal topic",
       "text": "finished LinkedIn post",
-      "sources": ["actual URLs used"],
+      "sources": ["only actual supplied URLs used for external factual claims"],
       "carousel": {{
         "slides": [
           {{
@@ -564,7 +710,8 @@ def generate_candidates(prompt):
                     json={
                         "contents": [{"parts": [{"text": prompt}]}],
                         "generationConfig": {
-                            "responseMimeType": "application/json"
+                            "responseMimeType": "application/json",
+                            "temperature": 0.75
                         },
                     },
                     timeout=180,
@@ -612,8 +759,34 @@ def generate_candidates(prompt):
                 continue
 
             if posts:
-                print(f"SUCCESS with {model}: {len(posts)} posts generated")
-                return posts[:DRAFT_COUNT]
+                posts = posts[:DRAFT_COUNT]
+                provocative_count = sum(1 for p in posts if p.get("provocative") is True)
+                anchors = []
+                invalid_anchor = False
+                for p in posts:
+                    p_anchors = p.get("experience_anchor", [])
+                    if isinstance(p_anchors, str):
+                        p_anchors = [p_anchors]
+                        p["experience_anchor"] = p_anchors
+                    if not p_anchors or any(a not in VALID_ANCHORS for a in p_anchors):
+                        invalid_anchor = True
+                    anchors.extend(p_anchors)
+
+                if len(posts) != DRAFT_COUNT:
+                    last_error = RuntimeError(f"Expected {DRAFT_COUNT} posts, got {len(posts)}")
+                    print(last_error)
+                    continue
+                if provocative_count != 2:
+                    last_error = RuntimeError(f"Expected exactly 2 provocative posts, got {provocative_count}")
+                    print(last_error)
+                    continue
+                if invalid_anchor or len(set(anchors)) < 3:
+                    last_error = RuntimeError("Experience anchors are invalid or insufficiently diverse")
+                    print(last_error)
+                    continue
+
+                print(f"SUCCESS with {model}: {len(posts)} experience-led posts generated")
+                return posts
 
             last_error = RuntimeError(f"{model} returned no posts")
             print("Gemini returned no posts, trying again")
@@ -622,20 +795,22 @@ def generate_candidates(prompt):
 
 
 def fact_check_candidate(candidate, trends):
-    """Second-pass verifier. It may correct or reject unsupported claims before anything reaches Buffer."""
+    """Strict second pass: verify both Matvei-experience claims and external facts before Buffer."""
     trend_text = "\n\n".join(
         f"SOURCE: {x['source']}\nTITLE: {x['title']}\nURL: {x['url']}\nDESCRIPTION: {x['description']}"
         for x in trends
     )
 
     prompt = f"""
-You are a strict fact-checker and copy editor.
+You are a strict fact-checker, experience-grounding editor and copy editor.
+
+{EXPERIENCE_FACTS}
 
 {PM_FACTS}
 
 CAPITALIZATION POLICY:
-- ordinary prose may begin lowercase
-- proper nouns, official names and acronyms MUST use standard capitalization
+- ordinary prose may begin lowercase and "i" stays lowercase
+- proper nouns, official names, brands, frameworks and acronyms MUST use standard capitalization
 - examples: LinkedIn, OpenAI, GitHub, Jira, Scrum, Agile, Kanban, Toyota, Telegram, Tbilisi, Matvei Shakhurdin, AI, PM, API, SQL, CRM, QA
 
 TREND EVIDENCE:
@@ -644,22 +819,29 @@ TREND EVIDENCE:
 CANDIDATE JSON:
 {json.dumps(candidate, ensure_ascii=False)}
 
-Do a claim-by-claim check.
-Rules:
-1. A factual claim is allowed only if supported by the verified PM facts above or by the supplied trend evidence.
-2. If unsupported, remove it, soften it into clearly subjective opinion, or rewrite around it.
-3. Do not invent replacement facts.
-4. Keep Matvei's tone of voice and lowercase ordinary prose.
-5. Correct capitalization of every proper noun / official name / acronym.
-6. Do not reintroduce a period at the end of paragraphs.
-7. Keep the same general topic unless the entire topic depends on unsupported facts.
-8. Carousel copy must match the corrected post and follow the same factual standard.
+Check every claim and the underlying thesis.
 
-Return VALID JSON ONLY in this shape:
+MANDATORY RULES:
+1. The candidate MUST be genuinely grounded in the listed experience_anchor IDs.
+2. Every factual claim about Matvei's work must be directly supported by VERIFIED MATVEI EXPERIENCE.
+3. Do not infer extra client details, results, motives, team sizes, timelines or outcomes from an anchor.
+4. External factual claims are allowed only if supported by VERIFIED FACT BASE or supplied TREND EVIDENCE.
+5. If an unsupported detail is nonessential, remove it or rewrite it as clearly subjective judgment.
+6. If the main thesis depends on invented or unsupported experience, set approved=false rather than fabricating a replacement story.
+7. Keep the core experience-led thesis and Matvei's voice.
+8. Correct every proper noun / official name / acronym.
+9. Keep lowercase ordinary prose and no period at the end of paragraphs.
+10. Carousel copy must match the corrected post and the same factual standard.
+11. Provocative posts may challenge assumptions, but must not become ragebait or universal claims unsupported by experience.
+12. Preserve "provocative" and "experience_anchor" fields.
+
+Return VALID JSON ONLY:
 {{
   "approved": true,
   "issues": ["short description of anything corrected"],
   "candidate": {{
+    "provocative": true,
+    "experience_anchor": ["A5"],
     "category": "...",
     "topic": "...",
     "text": "corrected final post",
@@ -688,7 +870,10 @@ Return VALID JSON ONLY in this shape:
                     },
                     json={
                         "contents": [{"parts": [{"text": prompt}]}],
-                        "generationConfig": {"responseMimeType": "application/json"},
+                        "generationConfig": {
+                            "responseMimeType": "application/json",
+                            "temperature": 0.2
+                        },
                     },
                     timeout=180,
                 )
@@ -709,7 +894,18 @@ Return VALID JSON ONLY in this shape:
                 raw = r.json()["candidates"][0]["content"]["parts"][0]["text"]
                 checked = json.loads(raw)
                 corrected = checked.get("candidate")
+                if checked.get("approved") is not True:
+                    last_error = RuntimeError("Candidate failed experience/fact grounding")
+                    print("FACT-CHECK REJECTED:", checked.get("issues"))
+                    continue
                 if corrected and corrected.get("text"):
+                    anchors = corrected.get("experience_anchor", [])
+                    if isinstance(anchors, str):
+                        anchors = [anchors]
+                        corrected["experience_anchor"] = anchors
+                    if not anchors or any(a not in VALID_ANCHORS for a in anchors):
+                        last_error = RuntimeError("Fact-check returned invalid experience anchor")
+                        continue
                     if checked.get("issues"):
                         print("FACT-CHECK CORRECTIONS:", checked.get("issues"))
                     return corrected
@@ -718,7 +914,6 @@ Return VALID JSON ONLY in this shape:
                 time.sleep(5)
                 continue
 
-    # Safer failure mode: do not publish an unverified candidate.
     raise RuntimeError(f"Fact-check failed; draft was not sent to Buffer. Last error: {last_error}")
 
 def git_publish_generated():
