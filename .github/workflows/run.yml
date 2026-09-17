@@ -1,9 +1,10 @@
-name: Generate LinkedIn Post
+name: Generate LinkedIn Drafts
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "0 8 * * 1"
+
+permissions:
+  contents: write
 
 jobs:
   run:
@@ -16,9 +17,10 @@ jobs:
         with:
           python-version: "3.12"
 
-      - run: pip install requests
+      - run: pip install requests pillow
 
-      - run: python main.py
+      - name: Generate posts, carousels and Buffer drafts
+        run: python main.py
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
