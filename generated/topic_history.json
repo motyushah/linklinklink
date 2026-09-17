@@ -126,5 +126,48 @@
       "A8"
     ],
     "provocative": false
+  },
+  {
+    "run_id": "35236518622",
+    "created_at": "2026-09-17T14:57:41Z",
+    "lane_id": "dependency_map",
+    "topic": "dependencies deserve their own map",
+    "anchors": [
+      "A3",
+      "A8"
+    ],
+    "provocative": true
+  },
+  {
+    "run_id": "35236518622",
+    "created_at": "2026-09-17T14:57:41Z",
+    "lane_id": "sold_hours",
+    "topic": "sold hours are a delivery constraint, not an accounting detail",
+    "anchors": [
+      "A5"
+    ],
+    "provocative": true
+  },
+  {
+    "run_id": "35236518622",
+    "created_at": "2026-09-17T14:57:41Z",
+    "lane_id": "review_without_takeover",
+    "topic": "reviewing work without taking the work back",
+    "anchors": [
+      "A13"
+    ],
+    "provocative": false
+  },
+  {
+    "run_id": "35236518622",
+    "created_at": "2026-09-17T14:57:41Z",
+    "lane_id": "automate_checks_not_judgment",
+    "topic": "automate repeated checks before automating judgment",
+    "anchors": [
+      "A15",
+      "A16",
+      "A17"
+    ],
+    "provocative": false
   }
 ]
