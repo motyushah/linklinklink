@@ -1,0 +1,45 @@
+[
+  {
+    "run_id": "35233996552",
+    "created_at": "2026-09-17T14:34:30Z",
+    "lane_id": "interlocking_streams",
+    "topic": "program management starts where timelines stop being independent",
+    "anchors": [
+      "A8",
+      "A10"
+    ],
+    "provocative": true
+  },
+  {
+    "run_id": "35233996552",
+    "created_at": "2026-09-17T14:34:30Z",
+    "lane_id": "context_switch_cost",
+    "topic": "context switching is a scheduling problem, not a personal discipline problem",
+    "anchors": [
+      "A2",
+      "A3",
+      "A9"
+    ],
+    "provocative": true
+  },
+  {
+    "run_id": "35233996552",
+    "created_at": "2026-09-17T14:34:30Z",
+    "lane_id": "project_to_product_gap",
+    "topic": "the project ends before the product does",
+    "anchors": [
+      "A11"
+    ],
+    "provocative": false
+  },
+  {
+    "run_id": "35233996552",
+    "created_at": "2026-09-17T14:34:30Z",
+    "lane_id": "qa_ownership",
+    "topic": "QA is not the last stage of a project",
+    "anchors": [
+      "A6"
+    ],
+    "provocative": false
+  }
+]
