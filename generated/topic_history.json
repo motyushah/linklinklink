@@ -233,5 +233,64 @@
       "A12"
     ],
     "provocative": false
+  },
+  {
+    "run_id": "35239455182",
+    "created_at": "2026-09-17T15:23:57Z",
+    "lane_id": "resource_substitution",
+    "topic": "people are not interchangeable cells in a spreadsheet",
+    "domain": "resource_capacity",
+    "bucket": "core",
+    "anchors": [
+      "A2",
+      "A9"
+    ],
+    "provocative": true,
+    "hook_style": "tiny_list",
+    "opening": "three empty slots on a project board. two developers out sick. one designer who has never looked at a banking app in their life"
+  },
+  {
+    "run_id": "35239455182",
+    "created_at": "2026-09-17T15:23:57Z",
+    "lane_id": "calendar_vs_effort",
+    "topic": "three days of effort can take three weeks of calendar",
+    "domain": "scheduling",
+    "bucket": "core",
+    "anchors": [
+      "A8",
+      "A10"
+    ],
+    "provocative": true,
+    "hook_style": "contrast",
+    "opening": "effort is how long the work takes. calendar is how long the world takes to let you do it"
+  },
+  {
+    "run_id": "35239455182",
+    "created_at": "2026-09-17T15:23:57Z",
+    "lane_id": "documentation_level",
+    "topic": "documentation should scale with consequence and handoff count",
+    "domain": "documentation",
+    "bucket": "core",
+    "anchors": [
+      "A10",
+      "A15"
+    ],
+    "provocative": false,
+    "hook_style": "symptom",
+    "opening": "when a team spends more time updating Jira tickets and status templates than actually writing code, you have entered the zone of paperwork theatre"
+  },
+  {
+    "run_id": "35239455182",
+    "created_at": "2026-09-17T15:23:57Z",
+    "lane_id": "creative_briefing",
+    "topic": "specialists need different kinds of clarity",
+    "domain": "design",
+    "bucket": "adjacent",
+    "anchors": [
+      "A7"
+    ],
+    "provocative": false,
+    "hook_style": "numberless_pattern",
+    "opening": "you cannot brief a motion designer the same way you brief a UI designer, and you definitely cannot brief either of them using developer requirements"
   }
 ]
