@@ -1,592 +1,521 @@
 
-Да. Но тебе не обязательно начинать с AI-агента. Для твоей задачи лучше разделить две вещи:
-
-AI-мозг — придумывает темы, исследует, пишет в твоём tone of voice, решает, какой визуал нужен
-
-automation pipeline — запускает всё по расписанию, собирает картинку, отправляет на approve и публикует
-
-Полноценный агент понадобится уже тогда, когда ты захочешь, чтобы система сама решала, о чём писать, смотрела прошлые результаты и корректировала контент-стратегию.
-
-Что я бы собрал тебе
-Примерно такую машину:
-
-каждый понедельник / среду / пятницу
-
-контент-стратегия
-→ выбор темы
-→ research
-→ пост в стиле Матвея
-→ корректура
-→ генерация визуала
-→ preview
-→ approve
-→ LinkedIn
-→ сбор статистики
-→ обучение следующего поста
-
-Причём первые недели я оставил бы один человеческий клик перед публикацией. Не потому что технически нельзя сделать полный autopilot, а потому что личный LinkedIn — это твоя репутация. Лучше:
-
-AI сделал всё → прислал тебе → ты нажал approve
-
-а не проснуться и увидеть, что робот ночью решил написать «5 things Agile taught me about life».
-
-Самый простой вариант — прямо вокруг ChatGPT
-Я уже нашёл тебе две подходящие интеграции, которые можно подключить прямо здесь:
-
-Canva — чтобы я мог брать твой шаблон, менять текст, изображения и собирать визуалы
-
-Metricool — чтобы работать с контент-планом, аналитикой и scheduled posts
-
-Я вывел тебе их подключение выше.
-
-Тогда workflow может выглядеть буквально так:
-
-«сделай следующий пост из серии AI for PMs в моём стиле. Используй наш LinkedIn-шаблон. Подготовь visual + caption и поставь на четверг 11:00»
-
-И мы постепенно сведём это почти к одной команде.
-
-Более серьёзный вариант — Make.com
-Вот это уже практически твоя content factory.
-
-Make сейчас умеет напрямую работать с LinkedIn, включая Create User Image Post, Create User Text Post и Create User Video Post для личного профиля. 
-
-Я бы сделал такой сценарий:
-
-SCHEDULE
-↓
-Google Sheet / Notion
-↓
-OPENAI
-↓
-topic selection
-↓
-research
-↓
-post generation
-↓
-tone-of-voice editor
-↓
-visual copy generation
-↓
-CANVA / image template
-↓
-approval
-↓
-LINKEDIN
-↓
-analytics
-↓
-content database
-Например, в Google Sheet одна строка:
-
-date	pillar	idea	status	post	image	approved	linkedin
-21.09	AI × PM	AI intake	idea	—	—	false	—
-После запуска сценария всё остальное появляется автоматически.
-
-Я бы ещё добавил Buffer
-У Buffer как раз в мае 2026 появился новый публичный API, рассчитанный в том числе на AI agents, Make, Zapier и n8n. Он умеет создавать, планировать и публиковать контент. 
-
-Причём у Buffer есть MCP-интеграция: AI-ассистент может получить команду вроде:
-
-draft a LinkedIn post and schedule it for Thursday
-
-и отправить публикацию в Buffer. 
-
-Buffer поддерживает для LinkedIn personal profiles публикацию, scheduling, картинки, PDF/carousels, видео и аналитику. 
-
-То есть получается ещё приятнее:
-
-Я
-↓
-Buffer
-↓
-LinkedIn
-а Make занимается всей логикой вокруг.
-
-А где здесь AI-агент?
-Вот здесь начинается самое интересное.
-
-Обычная automation говорит:
-
-каждую среду возьми следующую строку → напиши текст → опубликуй
-
-А agent получает более широкую задачу:
-
-веди LinkedIn Матвея Шахурдина как контент-стратег
-цель — позиционировать его как Senior Project / Delivery Manager с сильным AI/process background
-публикуй 3 качественных материала в неделю
-не повторяй темы
-анализируй статистику предыдущих публикаций
-отслеживай актуальные темы AI × Project Management
-сохраняй tone of voice
-предлагай эксперименты
-
-И дальше агент сам может решить:
-
-последние 3 поста про Agile
-↓
-слишком много одной темы
-
-пост про AI automation
-↓
-engagement выше среднего
-
-решение
-↓
-следующий пост:
-"я сделал AI-агента, который превращает messy brief в нормальную PM-задачу"
-Вот для этого уже нужен агент.
-
-Как бы я сделал конкретно тебе
-Не стал бы сразу городить отдельное приложение.
-
-Я бы собрал V1 за несколько компонентов:
-
-ChatGPT — мозг
-
-Здесь храним твою контент-стратегию, стиль, удачные посты, forbidden AI phrases, карьерное позиционирование и content pillars
-
-Google Sheets — база
-
-идеи → drafts → published → статистика
-
-Google Drive у тебя уже подключён к ChatGPT, поэтому с этой базой я смогу работать напрямую
-
-Canva — visual engine
-
-один хороший master-template твоей айдентики
-
-Я не рекомендую каждый раз «генерировать картинку AI с нуля». Для твоего LinkedIn гораздо лучше:
-
-стабильный дизайн + AI-generated content
-
-Так профиль будет выглядеть как единая система
-
-Make — automation layer
-
-Metricool или Buffer — publishing layer
-
-LinkedIn — конечная публикация
-
-Сам LinkedIn официально позволяет приложениям публиковать от имени пользователя через разрешение w_member_social. 
-
-И получится примерно вот что
-Допустим, ночью система запускается.
-
-01:00
-
-Агент смотрит content backlog.
-
-Выбирает:
-
-почему хороший PM не должен превращать Jira в кладбище задач
-
-Исследует тему.
-
-Пишет черновик.
-
-Проверяет:
-
-нет AI-slop
-
-нет not only... but
-
-нет длинных тире
-
-нормальный human English
-
-соответствует твоему позиционированию
-
-не повторяет предыдущие посты
-
-Потом делает:
-
-IMAGE
-
-jira is not your project management system
-
-в твоей визуальной айдентике.
-
-И caption.
-
-В 09:00 тебе прилетает:
-
-POST READY
-preview
-
-Approve / Rewrite / Skip
-
-Ты нажимаешь Approve.
-
-И публикация сама уходит, например, в 11:30.
-
-После этого агент через 24–72 часа записывает:
-
-views / likes / comments / engagement
-
-и учитывает это дальше.
-
-Где мы сейчас
-По сути, большая часть компонентов для этого уже существует. Make напрямую поддерживает пользовательские LinkedIn image posts, а Buffer в 2026 специально открыл API для AI/automation workflows. 
-
-Поэтому я бы не писал своего агента с нуля.
-
-V1 я бы сделал:
-
-ChatGPT + Google Sheets + Canva + Metricool
-
-а если автоматизация станет сложнее:
-
-ChatGPT/OpenAI API + Make + Canva + Buffer + LinkedIn
-
-И вот второй вариант уже будет практически автономной редакцией из одного человека — тебя.
-
-
-c2dbc79d-23f2-4105-85e6-ffe007991683.png
-
-
-Запись экрана — 2026-09-17 в 16.29.52.mov
-Файл
-
-Снимок экрана — 2026-09-17 в 16.32.27.png
-
-Снимок экрана — 2026-09-17 в 16.34.54.png
-
-e4017fe8-56c3-42e5-b431-fa2c6152821c.png
-
-a611737e-8c84-4c3c-add2-ab84e0742ac9.png
-
-b0df5edc-3efe-4029-ac30-8c1ed906d5fd.png
-вроде вышло 
-
-f22da525-cd41-4d8a-bd62-29af51853ae8.png
-
-carousel-1.png
-carousel-2.png
-carousel-3.png
-carousel-4.png
-carousel-5.png
-day8-1.png
-day8-2.png
-day8-3.png
-day8-4.png
-day8-5.png
-day8-6.png
-(1) i think a project manager is basically a parent to their projects 👨‍🍼 
-
-(yes, i know. you’re not supposed to call your projects your babies. you’re supposed to stay emotionally detached, make rational decisions, look at the triangle, update the spreadsheet and move on)
-
-but hear me out 🗣️ 🗣️ 🗣️ 
-
-every project is basically a child at a different stage of development:
-- one can’t even hold its head up yet, so you have to support it constantly;
-- one just filled its diaper and needs immediate attention;
-- one is sick and you’re already calling an ambulance;
-- one is running around the room screaming for absolutely no apparent reason; - and one is quietly sitting at the table doing a puzzle and, for once, you can leave it alone for 20 minutes
-
-projects and teams are pretty much the same. some need structure, some need freedom, some need constant attention, and some need you to stop touching them and let people do their jobs
-
-figuring out which one you’re dealing with is probably as important as knowing your scope, budget, timeline and risks 
-there’s a surprisingly pedagogical and psychological side to project management that doesn’t really fit into the classic project management triangle
-
-so yeah, stock up on diapers, wet wipes and rattles. we’ve got projects to deliver 💨
-
-(2) i would like to introduce a new management methodology:
-
-LOW CORTISOL MANAGEMENT™ 🧚 
-does it exist?
-
-hell nah 💀 
-
-i mean, theoretically, a low cortisol project is possible
-you just need:
-
-- decision-makers who know what they want;
-- stakeholders who can explain what they want;
-- enough budget, people and time to do it;
-- timelines that can move when reality happens;
-- a motivated team that wants to ship;
-- self-driven people with golden hands;
-- a healthy connection between the team and stakeholders
-
-basically, you just need everything to go right at the same time
-
-easy
-you have achieved LOW CORTISOL MANAGEMENT™ 🧚 
-in approximately 1 out of 1,000 projects
-
-the other 999 have their own drama
-but project management is about making sure the project keeps moving when cortisol starts going up
-
-so put on your armor
-we’re bulletproof, nothing to lose 🦺
-
-(3) every project plan should have a backflip built into it 🤸
-
-you start a project, build a beautiful timeline, plan the roadmap, book the right people, distribute the workload, align everyone on priorities
-
-everything fits. beautiful 👍 
-
-and then suddenly everything that was a priority yesterday is not a priority anymore
-new priority, new scope, sometimes a completely new goal. and suddenly the whole team has to do a backflip at the same time
-re-prioritize, re-brief, re-plan, re-book people, figure out what stays, what moves and what dies
-
-this is not really an exception. the possibility of a backflip should probably be built into the project from day one
-
-because priorities will change, scope will change, people will change their minds. and sometimes the thing everyone agreed was extremely important on monday is somehow completely irrelevant by thursday
-
-you can’t really prevent that. you can only make sure the team knows how to flip together
-
-and the project manager’s job is to put enough gym mats on the floor so even if someone lands on their neck, everyone stays alive 🫡
-
-(4) starting a series: one day, one PM problem, one working automation.
-building each one myself, showing what's inside
-
-day 1 — jira deadlines, straight to telegram
-
-09:00 every day, one message: everything overdue, everything due
-today, everything due in the next three days. sorted by how much
-it burns. red, orange, yellow. nothing else in it
-
-four nodes. schedule → jira → code → telegram
-the filter does the actual work:
-
-project = DR AND statusCategory != Done AND due <= 3d
-ORDER BY due ASC
-
-statusCategory, not status – statuses get renamed, categories don't.
-that one word is the difference between a filter that works and a
-filter that quietly breaks in six months
-
-—
-
-why this one first: a board never tells you when something is about
-to slip. you have to go and look. which is fine on a calm week. on a
-loud one it's the first thing that drops, and you find out a task was
-overdue two days ago from the person who was waiting on it
-
-fair warning on the numbers: this runs on a test project with six
-issues, not a live team. I'm not going to tell you it saved X hours.
-what I can say is the check now happens whether I remember it or not
-
-what do you check by hand every morning that could check itself?
-
-(5) pm basics #1
-
-on an interview I was asked what is scrum, what is agile
-
-I said scrum is to agile what a species is to a genus. correct, and I had nothing behind it. four years working in agile methodologies and I couldn't actually explain the thing
-
-so I went and figured it out properly
-
-погоди, сейчас еще скину 
-
-s-01.png
-s-02.png
-s-03.png
-s-04.png
-s-05.png
-s-06.png
-s-07.png
-s-08.png
-s-09.png
-еще погоди 
-
-Да. Если репозиторий Public, то любой человек может открыть его и увидеть код, историю коммитов и всё, что ты туда коммитишь
-
-Я посмотрел именно тот код, который тебе дал. API-ключи там не лежат — они берутся из GitHub Secrets, то есть публично не показываются
-
-Но есть два нюанса:
-
-в коде есть твоё имя, сайт motyushah.com, описание опыта и правила твоего tone of voice
-
-все сгенерированные карусели код сейчас коммитит в папку generated/. Значит, они тоже будут публично доступны через GitHub, даже если это просто черновики, которые ты потом не выберешь
-
-То есть прям критичной сенситивной информации там сейчас нет: нет паролей, банковских данных, адреса, паспорта, зарплаты и т.п. Но твои будущие неопубликованные посты/карусели будут фактически публичными файлами
-
-И ещё важное правило: никогда не вставляй API-ключ прямо в main.py. Только GitHub Secrets. Если ключ хоть раз попадёт в публичный commit, даже если потом его удалить, считай его скомпрометированным и меняй
-
-Для твоего кейса я бы лучше не делал repo Public вообще. Можно оставить его Private и вынести картинки в отдельное бесплатное публичное хранилище, чтобы Buffer видел только изображения, а код и черновики оставались приватными
-
-Это безопаснее и правильнее. Могу сейчас переделать схему именно так, без доплаты.
-
-
-ee343133-b556-4004-85a0-160ca1390cee.png
-
-вижу. Тут код не сломался — Gemini на всех трёх моделях ответил 503 Service Unavailable. Google прямо определяет 503 как временную перегрузку/недоступность и советует повторять запрос с увеличивающейся паузой. 
-
-И я бы сейчас сделал ещё одну вещь: для нового проекта поставил gemini-3.5-flash первым запасным вариантом. Google сам рекомендует новым проектам 3.5 Flash или 3.1 Flash-Lite. 
-
-В main.py найди внутри generate_candidates вот это:
-
-models = [
-    "gemini-3.8-flash",
-    "gemini-3.7-flash",
-    "gemini-3.6-flash",
+import os
+import json
+import re
+import time
+import html
+import requests
+import subprocess
+import xml.etree.ElementTree as ET
+from pathlib import Path
+from urllib.parse import quote
+
+from PIL import Image, ImageDraw, ImageFont
+
+GEMINI_KEY = os.environ["GEMINI_API_KEY"]
+BUFFER_KEY = os.environ["BUFFER_API_KEY"]
+
+DRAFT_COUNT = 4
+W, H = 1080, 1350
+MARGIN = 90
+
+PALETTE = [
+    ("#111111", "#FFE500", "#FFE500"),
+    ("#22C4DD", "#0D0D0D", "#0D0D0D"),
+    ("#FFFFFF", "#0D0D0D", "#14D6CE"),
+    ("#FFE500", "#0D0D0D", "#0D0D0D"),
+    ("#FF382D", "#FFFFFF", "#FFFFFF"),
+    ("#111111", "#14D6CE", "#14D6CE"),
 ]
-и замени на:
 
-models = [
-    "gemini-3.5-flash",
-    "gemini-3.5-flash-lite",
-    "gemini-3.1-flash-lite",
-    "gemini-3.8-flash",
-]
-И чуть ниже найди:
+ROOT = Path(__file__).parent
+FONT_DIR = ROOT / ".fonts"
+FONT_DIR.mkdir(exist_ok=True)
+ANTON = FONT_DIR / "Anton-Regular.ttf"
+INTER = FONT_DIR / "Inter.ttf"
 
-time.sleep(5 * (attempt + 1))
-замени на:
+ANTON_URL = "https://raw.githubusercontent.com/google/fonts/main/ofl/anton/Anton-Regular.ttf"
+INTER_URL = "https://raw.githubusercontent.com/google/fonts/main/ofl/inter/Inter%5Bopsz%2Cwght%5D.ttf"
 
-time.sleep(15 * (attempt + 1))
-Commit changes → Run workflow ещё раз
+STYLE = """
+You write LinkedIn posts for Matvei Shakhurdin.
 
-Больше пока ничего не трогай. Если снова все четыре модели дадут 503, тогда дело уже в текущей доступности Gemini для твоего free-проекта, и я переключу нашу машину на другой бесплатный AI endpoint, не ломая Buffer и генерацию картинок.
+VOICE:
+- English
+- lowercase by default, including "i"
+- proper nouns keep correct capitalization: Jira, Scrum, Agile, Toyota, Telegram, Google, Tbilisi etc
+- never capitalize a sentence only because it starts a paragraph
+- no period at the end of paragraphs
+- never use an em dash —
+- use an en dash – when needed
+- natural spoken rhythm, not telegram-style fragments
+- occasional emojis are fine as punchlines, not decoration
+- dry humor, absurd comparisons, slightly unhinged metaphors are welcome
+- smart and practical underneath the joke
+- no LinkedIn guru voice
+- no corporate bullshit
+- no AI slop
+- no fake vulnerability, fake experience, fake metrics, fake quotes
+- no "in today's fast-paced world", "game changer", "unlock", "leverage"
+- no "not only ... but also"
+- no hashtags
+- do not end with a generic engagement question
 
+The energy can resemble:
+"i think a project manager is basically a parent to their projects 👨‍🍼"
+"i would like to introduce a new management methodology: LOW CORTISOL MANAGEMENT™ 🧚"
+"every project plan should have a backflip built into it 🤸"
 
-Нет, слишком сложно для меня. сразу весь готовый код скинь, который надо переставить.
+The post must contain a real PM idea. Humor is packaging, not the substance.
+"""
 
-да, проще: ничего руками внутри кода не меняй
+PROFILE = """
+Matvei Shakhurdin is a project / delivery manager with 4+ years of experience.
+His real background includes design and creative production, web development,
+marketing, fintech, designers, developers, stakeholder communication,
+team workload, limited resources, process setup and automation.
 
-я уже собрал тебе полностью готовый main.py, где:
+Never invent employers, numbers, results, team sizes or personal stories.
+"""
 
-сначала пробуются бесплатные Gemini-модели
+PM_FACTS = """
+VERIFIED FACT BASE:
 
-если одна отдаёт 503, скрипт ждёт и пробует снова
+Agile Manifesto — https://agilemanifesto.org/
+- published in 2001
+- four value preferences
+- it explicitly says the items on the right still have value
 
-потом автоматически переключается на следующую
+Agile history — https://agilemanifesto.org/history
+- seventeen people met at Snowbird, Utah in February 2001
+- Scrum was one of several approaches already represented there
 
-остальная логика с каруселями и Buffer остаётся как была
+Scrum Guide — https://scrumguides.org/scrum-guide.html
+- Scrum is a lightweight framework
+- developed in the early 1990s
+- founded on empiricism and lean thinking
+- iterative and incremental
+- purposefully incomplete
 
-Google сейчас действительно даёт free tier для gemini-3.5-flash и gemini-3.5-flash-lite. 
+Toyota Production System —
+https://global.toyota/en/company/vision-and-philosophy/production-system/
+- Kanban is associated with the Toyota Production System
+- Kanban cards support a pull system
+- the pull concept was influenced in part by supermarket replenishment
 
-Скачай файл:
+Never invent history, studies, percentages or statistics.
+If a claim is not supported by supplied evidence, remove it.
+"""
 
-готовый main.py
+def download(url, path):
+    if path.exists():
+        return
+    r = requests.get(url, timeout=30)
+    r.raise_for_status()
+    path.write_bytes(r.content)
 
-Дальше только:
+def load_anton(size):
+    return ImageFont.truetype(str(ANTON), size)
 
-GitHub → Code
+def load_inter(size, weight=300):
+    f = ImageFont.truetype(str(INTER), size)
+    try:
+        f.set_variation_by_axes([24, weight])
+    except Exception:
+        pass
+    return f
 
-открыть main.py
+def wrap(draw, text, font, max_width):
+    words = text.split()
+    if not words:
+        return [""]
+    lines, line = [], words[0]
+    for word in words[1:]:
+        test = line + " " + word
+        if draw.textbbox((0, 0), test, font=font)[2] <= max_width:
+            line = test
+        else:
+            lines.append(line)
+            line = word
+    lines.append(line)
+    return lines
 
-нажать карандаш
+def fit_text(draw, text, loader, max_width, max_height, start, minimum, spacing=8):
+    for size in range(start, minimum - 1, -2):
+        font = loader(size)
+        lines = wrap(draw, text, font, max_width)
+        heights = []
+        for ln in lines:
+            box = draw.textbbox((0, 0), ln or "A", font=font)
+            heights.append(box[3] - box[1])
+        total = sum(heights) + spacing * max(0, len(lines) - 1)
+        if total <= max_height:
+            return font, lines, total
+    font = loader(minimum)
+    lines = wrap(draw, text, font, max_width)
+    return font, lines, max_height
 
-удалить всё
+def draw_lines(draw, xy, lines, font, fill, spacing):
+    x, y = xy
+    for line in lines:
+        draw.text((x, y), line, font=font, fill=fill)
+        box = draw.textbbox((x, y), line or "A", font=font)
+        y += (box[3] - box[1]) + spacing
+    return y
 
-вставить содержимое скачанного файла
+def render_slide(slide, index, out_path):
+    bg, fg, accent = PALETTE[index % len(PALETTE)]
+    img = Image.new("RGB", (W, H), bg)
+    draw = ImageDraw.Draw(img)
 
-Commit changes
+    label = slide.get("label", "pm notes")
+    headline = slide.get("headline", "").strip().upper()
+    body = slide.get("body", "").strip()
 
-Actions → Run workflow
+    label_font = load_inter(32, 300)
+    draw.text((MARGIN, 78), label, font=label_font, fill=accent)
 
-run.yml не трогай
+    headline_y = 275 if index == 0 else 255
+    max_head_h = 600 if index == 0 else 470
+    head_font, head_lines, _ = fit_text(
+        draw, headline, load_anton,
+        W - 2 * MARGIN, max_head_h,
+        148 if index == 0 else 126, 72, spacing=2
+    )
+    y = draw_lines(draw, (MARGIN, headline_y), head_lines, head_font, fg, 2)
 
-Если снова упадёт — просто кидай скрин ошибки, без самостоятельных правок.
+    if body:
+        y += 58
+        body_loader = lambda s: load_inter(s, 300)
+        body_font, body_lines, _ = fit_text(
+            draw, body, body_loader,
+            W - 2 * MARGIN, H - y - 140,
+            48, 30, spacing=16
+        )
+        draw_lines(draw, (MARGIN, y), body_lines, body_font, fg, 16)
 
+    # tiny signature on final slide only
+    if slide.get("signature"):
+        sig_font = load_inter(26, 300)
+        draw.text((MARGIN, H - 85), "Matvei Shakhurdin · motyushah.com",
+                  font=sig_font, fill=accent)
 
-main_ready.py
-Код
+    img.save(out_path, "PNG", optimize=True)
 
+def strip_html(value):
+    if not value:
+        return ""
+    value = html.unescape(value)
+    value = re.sub(r"<[^>]+>", " ", value)
+    return re.sub(r"\s+", " ", value).strip()
 
-Библиотека
-/
-main_ready.py
+def hacker_news():
+    result = []
+    try:
+        ids = requests.get(
+            "https://hacker-news.firebaseio.com/v0/topstories.json",
+            timeout=20
+        ).json()[:25]
+        for item_id in ids:
+            item = requests.get(
+                f"https://hacker-news.firebaseio.com/v0/item/{item_id}.json",
+                timeout=10
+            ).json()
+            if item and item.get("type") == "story":
+                result.append({
+                    "source": "Hacker News",
+                    "title": item.get("title", ""),
+                    "url": item.get("url", f"https://news.ycombinator.com/item?id={item_id}"),
+                    "description": ""
+                })
+    except Exception as e:
+        print("HN failed:", e)
+    return result
 
+def product_hunt():
+    result = []
+    try:
+        r = requests.get(
+            "https://www.producthunt.com/feed",
+            timeout=20,
+            headers={"User-Agent": "Mozilla/5.0"}
+        )
+        r.raise_for_status()
+        root = ET.fromstring(r.content)
+        ns = {"atom": "http://www.w3.org/2005/Atom"}
+        for entry in root.findall("atom:entry", ns)[:15]:
+            link_el = entry.find("atom:link", ns)
+            result.append({
+                "source": "Product Hunt",
+                "title": strip_html(entry.findtext("atom:title", default="", namespaces=ns)),
+                "url": link_el.attrib.get("href", "") if link_el is not None else "",
+                "description": strip_html(entry.findtext("atom:content", default="", namespaces=ns))[:500]
+            })
+    except Exception as e:
+        print("Product Hunt failed:", e)
+    return result
 
-519
-520
-521
-522
-523
-524
-525
-526
-527
-528
-529
-530
-531
-532
-533
-534
-535
-536
-537
-538
-539
-540
-541
-542
-543
-544
-545
-546
-547
-548
-549
-550
-551
-552
-553
-554
-555
-556
-557
-558
-559
-560
-561
-562
-563
-564
-565
-566
-567
-568
-569
-570
-571
-572
-573
-574
-575
-576
-577
-578
-579
-580
-581
-582
-583
-584
-585
-586
-587
-588
-589
-590
-591
-592
-593
-594
-595
-596
-597
-598
-599
-600
-601
-602
-603
-604
-605
-606
-607
-608
-609
-610
-611
+def google_news():
+    result = []
+    for search in [
+        "AI project management",
+        "AI automation work",
+        "future of work AI",
+        "design AI tools",
+        "software project management"
+    ]:
+        try:
+            url = (
+                "https://news.google.com/rss/search?"
+                f"q={quote(search)}&hl=en-US&gl=US&ceid=US:en"
+            )
+            r = requests.get(url, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
+            r.raise_for_status()
+            root = ET.fromstring(r.content)
+            for item in root.findall(".//item")[:5]:
+                result.append({
+                    "source": "Google News",
+                    "title": strip_html(item.findtext("title", "")),
+                    "url": item.findtext("link", ""),
+                    "description": strip_html(item.findtext("description", ""))[:500]
+                })
+        except Exception as e:
+            print("Google News failed:", e)
+    return result
 
+def collect_trends():
+    items = hacker_news() + product_hunt() + google_news()
+    unique, seen = [], set()
+    for item in items:
+        key = item["title"].lower().strip()
+        if key and key not in seen:
+            seen.add(key)
+            unique.append(item)
+    return unique[:50]
+
+def buffer_request(query, variables=None):
+    r = requests.post(
+        "https://api.buffer.com",
+        headers={
+            "Authorization": f"Bearer {BUFFER_KEY}",
+            "Content-Type": "application/json",
+        },
+        json={"query": query, "variables": variables or {}},
+        timeout=60,
+    )
+    r.raise_for_status()
+    result = r.json()
+    if result.get("errors"):
+        raise RuntimeError(str(result["errors"]))
+    return result["data"]
+
+def get_linkedin():
+    data = buffer_request("""
+    query {
+      account {
+        organizations { id name }
+      }
+    }
+    """)
+    org = data["account"]["organizations"][0]
+    data = buffer_request(
+        """
+        query GetChannels($organizationId: OrganizationId!) {
+          channels(input: {organizationId: $organizationId}) {
+            id name service
+          }
+        }
+        """,
+        {"organizationId": org["id"]},
+    )
+    linkedin = next(
+        c for c in data["channels"]
+        if str(c["service"]).lower() == "linkedin"
+    )
+    return linkedin["id"]
+
+def make_prompt(trends):
+    trend_text = "\n\n".join(
+        f"SOURCE: {x['source']}\nTITLE: {x['title']}\nURL: {x['url']}\nDESCRIPTION: {x['description']}"
+        for x in trends
+    )
+
+    return f"""
+{STYLE}
+
+{PROFILE}
+
+{PM_FACTS}
+
+Create exactly {DRAFT_COUNT} different LinkedIn post candidates.
+
+MIX:
+- about half: evergreen PM fundamentals, but with a surprising angle, history,
+  analogy, misconception or sharp practical observation
+- one practical post: automation, delivery, processes, Jira, workload,
+  stakeholders, creative/dev teams, QA or planning
+- up to one trend-based post if a fresh trend has a genuinely good PM/work angle
+
+A trend is raw material, not the whole post.
+Do not chase trends for the sake of it.
+
+FACT CHECK:
+- use only the verified PM facts above or facts explicitly present in the trend evidence
+- do not turn a headline into invented detail
+- no made-up statistics, research, quotes or company announcements
+- when evidence is weak, remove the claim
+
+QUALITY:
+- every post needs one real thought
+- reject anything that sounds like generic PM influencer content
+- interesting > comprehensive
+- specific > motivational
+- no AI-slop phrases
+
+CAROUSEL:
+For every post create 5–8 slides.
+The carousel should feel like Matvei's existing visual identity:
+- 1080×1350
+- Anton-style huge condensed uppercase headline
+- thin sans-serif supporting copy
+- huge margins
+- black / white / vivid yellow / cyan / vivid red
+- flat colors, no gradients
+- minimal editorial composition
+- one idea per slide
+- headlines short, preferably under 8 words
+- body ideally under 35 words
+- do not invent screenshots or fake interfaces
+- if a real screenshot would be required, explain the idea with typography instead
+
+The first slide must be a strong cover.
+The final slide should land the conclusion, not beg for engagement.
+
+TREND EVIDENCE:
+{trend_text}
+
+Return VALID JSON ONLY:
+{{
+  "posts": [
+    {{
+      "category": "pm_basics | practical | trend",
+      "topic": "internal topic",
+      "text": "finished LinkedIn post",
+      "sources": ["actual URLs used"],
+      "carousel": {{
+        "slides": [
+          {{
+            "label": "pm basics or another tiny label",
+            "headline": "SHORT HEADLINE",
+            "body": "optional supporting copy"
+          }}
+        ]
+      }}
+    }}
+  ]
+}}
+"""
+
+def generate_candidates(prompt):
+    # Free-tier first. If one model is temporarily overloaded (503/429),
+    # the script waits and automatically tries the next one.
+    models = [
+        "gemini-3.5-flash",
+        "gemini-3.5-flash-lite",
+        "gemini-3.1-flash-lite",
+        "gemini-2.5-flash-lite",
+    ]
+
+    last_error = None
+
+    for model in models:
+        for attempt in range(3):
+            print(f"Gemini {model}, attempt {attempt + 1}")
+
+            try:
+                r = requests.post(
+                    f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
+                    headers={
+                        "x-goog-api-key": GEMINI_KEY,
+                        "Content-Type": "application/json",
+                    },
+                    json={
+                        "contents": [{"parts": [{"text": prompt}]}],
+                        "generationConfig": {
+                            "responseMimeType": "application/json"
+                        },
+                    },
+                    timeout=180,
+                )
+            except requests.RequestException as e:
+                last_error = e
+                wait = 15 * (attempt + 1)
+                print(f"Gemini network error: {e}. waiting {wait}s")
+                time.sleep(wait)
+                continue
+
+            if r.status_code in [429, 500, 502, 503, 504]:
+                last_error = RuntimeError(
+                    f"{model} returned {r.status_code}: {r.text[:300]}"
+                )
+                wait = 15 * (attempt + 1)
+                print(f"temporary Gemini error: {r.status_code}. waiting {wait}s")
+                time.sleep(wait)
+                continue
+
+            if r.status_code in [401, 403]:
+                raise RuntimeError(
+                    "Gemini rejected GEMINI_API_KEY. Create a new key in Google AI Studio "
+                    "and replace the GEMINI_API_KEY secret in GitHub."
+                )
+
+            if r.status_code == 404:
+                last_error = RuntimeError(
+                    f"Model {model} is unavailable for this API key/project"
+                )
+                print(f"{model} unavailable (404), trying next model")
+                break
+
+            r.raise_for_status()
+
+            try:
+                raw = r.json()["candidates"][0]["content"]["parts"][0]["text"]
+                data = json.loads(raw)
+                posts = data.get("posts", [])
+            except (KeyError, IndexError, json.JSONDecodeError) as e:
+                last_error = e
+                print("Gemini returned an unexpected response, trying again")
+                wait = 10 * (attempt + 1)
+                time.sleep(wait)
+                continue
+
+            if posts:
+                print(f"SUCCESS with {model}: {len(posts)} posts generated")
+                return posts[:DRAFT_COUNT]
+
+            last_error = RuntimeError(f"{model} returned no posts")
+            print("Gemini returned no posts, trying again")
+
+    raise RuntimeError(f"Gemini failed on all free models. Last error: {last_error}")
+
+def git_publish_generated():
+    subprocess.run(["git", "config", "user.name", "github-actions[bot]"], check=True)
+    subprocess.run(
+        ["git", "config", "user.email", "41898282+github-actions[bot]@users.noreply.github.com"],
+        check=True
+    )
+    subprocess.run(["git", "add", "generated"], check=True)
+    status = subprocess.run(
+        ["git", "status", "--porcelain"],
+        check=True, capture_output=True, text=True
+    ).stdout.strip()
+    if not status:
+        return
+    subprocess.run(
+        ["git", "commit", "-m", f"add generated LinkedIn carousels {os.getenv('GITHUB_RUN_ID', '')}"],
+        check=True
+    )
+    subprocess.run(["git", "push"], check=True)
 
 def public_url(path):
     repo = os.environ["GITHUB_REPOSITORY"]
@@ -679,4 +608,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
