@@ -470,5 +470,61 @@
     "provocative": false,
     "hook_style": "cause_effect",
     "opening": "filling a spreadsheet with hypothetical disasters actually makes your team less prepared when a real crisis hits"
+  },
+  {
+    "run_id": "35324983340",
+    "created_at": "2026-09-18T08:35:38Z",
+    "lane_id": "health_trend",
+    "topic": "direction matters as much as current status",
+    "domain": "",
+    "bucket": "",
+    "anchors": [
+      "A5"
+    ],
+    "provocative": true,
+    "hook_style": "metaphor",
+    "opening": "a dry top deck on a cargo ship that is actively taking on water at the stern is technically a \"dry deck,\" but you would be a fool to sunbathe on it"
+  },
+  {
+    "run_id": "35324983340",
+    "created_at": "2026-09-18T08:35:38Z",
+    "lane_id": "planning_horizon",
+    "topic": "rolling wave planning",
+    "domain": "planning",
+    "bucket": "core",
+    "anchors": [
+      "A1"
+    ],
+    "provocative": true,
+    "hook_style": "object_lesson",
+    "opening": "your car headlights only illuminate about two hundred feet of road at a time, yet you can drive across the entire country at night without hitting a wall"
+  },
+  {
+    "run_id": "35324983340",
+    "created_at": "2026-09-18T08:35:38Z",
+    "lane_id": "why_project_exists",
+    "topic": "define why the project exists before planning",
+    "domain": "initiation",
+    "bucket": "core",
+    "anchors": [
+      "A10"
+    ],
+    "provocative": false,
+    "hook_style": "provocative_plain",
+    "opening": "a client request is almost never a project plan – it is usually just a list of symptoms wrapped in a solution they read about on a flight"
+  },
+  {
+    "run_id": "35324983340",
+    "created_at": "2026-09-18T08:35:38Z",
+    "lane_id": "psychological_load",
+    "topic": "uncertainty creates cognitive load",
+    "domain": "",
+    "bucket": "",
+    "anchors": [
+      "A2"
+    ],
+    "provocative": false,
+    "hook_style": "definition",
+    "opening": "project management is not just about tracking dates; it is about managing the finite cognitive bandwidth of your team"
   }
 ]
