@@ -582,5 +582,61 @@
     "provocative": false,
     "hook_style": "numberless_pattern",
     "opening": "a junior team member hands over a draft project plan that is missing three critical dependencies and has a completely unrealistic timeline"
+  },
+  {
+    "run_id": "35633674294",
+    "created_at": "2026-09-21T17:47:59Z",
+    "lane_id": "one_sentence_goal",
+    "topic": "using a simple objective as a filter for trade-offs",
+    "domain": "objectives_success",
+    "bucket": "core",
+    "anchors": [
+      "A1"
+    ],
+    "provocative": true,
+    "hook_style": "reframe",
+    "opening": "a project objective is not a description of what you are building – it is a filter designed to let your team say no to ninety percent of their own ideas"
+  },
+  {
+    "run_id": "35633674294",
+    "created_at": "2026-09-21T17:47:59Z",
+    "lane_id": "automation_failure_mode",
+    "topic": "testing edge cases as part of PM tooling",
+    "domain": "automation",
+    "bucket": "adjacent",
+    "anchors": [
+      "A17"
+    ],
+    "provocative": true,
+    "hook_style": "one_sentence_story",
+    "opening": "a beautifully configured webhook runs perfectly for three weeks until someone accidentally names a dummy task 'test-string-99' and the automated system proudly emails it to the cli"
+  },
+  {
+    "run_id": "35633674294",
+    "created_at": "2026-09-21T17:47:59Z",
+    "lane_id": "meeting_followup",
+    "topic": "preventing verbal alignment from evaporating",
+    "domain": "meetings",
+    "bucket": "core",
+    "anchors": [
+      "A3"
+    ],
+    "provocative": false,
+    "hook_style": "decision",
+    "opening": "you have to choose whether to wrap up the alignment call five minutes early to write down the action items, or let the conversation run until the last second and hope everyone reme"
+  },
+  {
+    "run_id": "35633674294",
+    "created_at": "2026-09-21T17:47:59Z",
+    "lane_id": "written_vs_sync",
+    "topic": "choosing medium based on ambiguity, speed and future memory",
+    "domain": "communication",
+    "bucket": "core",
+    "anchors": [
+      "A8"
+    ],
+    "provocative": false,
+    "hook_style": "rule_of_thumb",
+    "opening": "if you are trying to resolve ambiguity, book a fifteen-minute call; if you are trying to secure a durable decision, write a three-paragraph document"
   }
 ]
