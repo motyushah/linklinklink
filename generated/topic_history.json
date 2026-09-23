@@ -752,5 +752,64 @@
     "provocative": false,
     "hook_style": "micro_scene",
     "opening": "the marketing director wants a highly interactive, animated layout to drive conversion, while the legal officer is demanding a static, distraction-free interface to ensure complian"
+  },
+  {
+    "run_id": "35905779068",
+    "created_at": "2026-09-23T18:59:55Z",
+    "lane_id": "creative_dependency",
+    "topic": "creative work has dependencies even when the board looks flat",
+    "domain": "design",
+    "bucket": "adjacent",
+    "anchors": [
+      "A3",
+      "A7"
+    ],
+    "provocative": true,
+    "hook_style": "metaphor",
+    "opening": "identity, UI, motion and 3D do not become ready in the same order any more than ingredients in a kitchen cook at the same speed"
+  },
+  {
+    "run_id": "35905779068",
+    "created_at": "2026-09-23T18:59:55Z",
+    "lane_id": "requirements_are_decisions",
+    "topic": "requirements are accumulated decisions, not notes from a meeting",
+    "domain": "requirements",
+    "bucket": "core",
+    "anchors": [
+      "A1",
+      "A12"
+    ],
+    "provocative": true,
+    "hook_style": "definition",
+    "opening": "a requirement is just a polite fiction until someone attaches a commercial consequence to it"
+  },
+  {
+    "run_id": "35905779068",
+    "created_at": "2026-09-23T18:59:55Z",
+    "lane_id": "priority_levels",
+    "topic": "P1 through P5 mean nothing if all five start today",
+    "domain": "prioritization",
+    "bucket": "core",
+    "anchors": [
+      "A2",
+      "A9"
+    ],
+    "provocative": false,
+    "hook_style": "provocative_plain",
+    "opening": "priority labels are often used as a substitute for making hard choices about capacity"
+  },
+  {
+    "run_id": "35905779068",
+    "created_at": "2026-09-23T18:59:55Z",
+    "lane_id": "decision_log",
+    "topic": "projects forget decisions faster than they forget tasks",
+    "domain": "decisions",
+    "bucket": "core",
+    "anchors": [
+      "A10"
+    ],
+    "provocative": false,
+    "hook_style": "object_lesson",
+    "opening": "a building blueprint shows the walls, but it rarely explains why a load-bearing pillar was placed three feet to the left"
   }
 ]
