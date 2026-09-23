@@ -638,5 +638,61 @@
     "provocative": false,
     "hook_style": "rule_of_thumb",
     "opening": "if you are trying to resolve ambiguity, book a fifteen-minute call; if you are trying to secure a durable decision, write a three-paragraph document"
+  },
+  {
+    "run_id": "35835794907",
+    "created_at": "2026-09-23T08:14:34Z",
+    "lane_id": "delegation_checkpoints",
+    "topic": "good delegation includes agreed checkpoints",
+    "domain": "delegation",
+    "bucket": "core",
+    "anchors": [
+      "A13"
+    ],
+    "provocative": true,
+    "hook_style": "anti_template",
+    "opening": "delegating a critical project to a team member and telling them \"let me know if you need anything\" is not delegation – it is a hostage situation with better formatting"
+  },
+  {
+    "run_id": "35835794907",
+    "created_at": "2026-09-23T08:14:34Z",
+    "lane_id": "meeting_output",
+    "topic": "a meeting without an output is a social event with a calendar invite",
+    "domain": "",
+    "bucket": "",
+    "anchors": [
+      "A3"
+    ],
+    "provocative": true,
+    "hook_style": "myth_without_label",
+    "opening": "we believe that if fifteen smart people from design, copy, legal, and finance sit in a room and nod their heads for an hour, alignment has been achieved"
+  },
+  {
+    "run_id": "35835794907",
+    "created_at": "2026-09-23T08:14:34Z",
+    "lane_id": "success_criteria_early",
+    "topic": "success criteria are easiest to define before everyone is emotionally attached to the solution",
+    "domain": "objectives_success",
+    "bucket": "core",
+    "anchors": [
+      "A1"
+    ],
+    "provocative": false,
+    "hook_style": "question",
+    "opening": "how do you tell a client that their favorite new feature is actually a complete waste of the project budget?"
+  },
+  {
+    "run_id": "35835794907",
+    "created_at": "2026-09-23T08:14:34Z",
+    "lane_id": "pm_owns_estimation_process",
+    "topic": "the PM owns the estimation process, not every estimate",
+    "domain": "estimation",
+    "bucket": "core",
+    "anchors": [
+      "A6"
+    ],
+    "provocative": false,
+    "hook_style": "direct_claim",
+    "opening": "a PM who invents development estimates in a vacuum is just scheduling a future emergency"
   }
 ]
