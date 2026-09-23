@@ -694,5 +694,63 @@
     "provocative": false,
     "hook_style": "direct_claim",
     "opening": "a PM who invents development estimates in a vacuum is just scheduling a future emergency"
+  },
+  {
+    "run_id": "35838603631",
+    "created_at": "2026-09-23T08:46:13Z",
+    "lane_id": "forecast_budget",
+    "topic": "budget control is forecasting, not just recording spend",
+    "domain": "budget_economics",
+    "bucket": "core",
+    "anchors": [
+      "A5"
+    ],
+    "provocative": true,
+    "hook_style": "counterfactual",
+    "opening": "what if your project budget isn't an accounting vault to be audited at the end of the line, but a flight path you have to constantly steer"
+  },
+  {
+    "run_id": "35838603631",
+    "created_at": "2026-09-23T08:46:13Z",
+    "lane_id": "decision_docs",
+    "topic": "document decisions, not every breath the project takes",
+    "domain": "",
+    "bucket": "",
+    "anchors": [
+      "A8",
+      "A10"
+    ],
+    "provocative": true,
+    "hook_style": "cause_effect",
+    "opening": "writing down every single word spoken in a project meeting is the fastest way to ensure nobody knows what was actually decided"
+  },
+  {
+    "run_id": "35838603631",
+    "created_at": "2026-09-23T08:46:13Z",
+    "lane_id": "dependency_is_commitment",
+    "topic": "a dependency is a commitment between two pieces of work",
+    "domain": "dependencies",
+    "bucket": "core",
+    "anchors": [
+      "A3",
+      "A7"
+    ],
+    "provocative": false,
+    "hook_style": "failure_mode",
+    "opening": "a project schedule with a neat line connecting \"design ready\" to \"motion starts\" is usually just an invitation to a massive game of chicken"
+  },
+  {
+    "run_id": "35838603631",
+    "created_at": "2026-09-23T08:46:13Z",
+    "lane_id": "stakeholder_conflict",
+    "topic": "two valid stakeholder goals can still conflict",
+    "domain": "stakeholders",
+    "bucket": "core",
+    "anchors": [
+      "A10"
+    ],
+    "provocative": false,
+    "hook_style": "micro_scene",
+    "opening": "the marketing director wants a highly interactive, animated layout to drive conversion, while the legal officer is demanding a static, distraction-free interface to ensure complian"
   }
 ]
