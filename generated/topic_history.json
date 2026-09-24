@@ -811,5 +811,64 @@
     "provocative": false,
     "hook_style": "object_lesson",
     "opening": "a building blueprint shows the walls, but it rarely explains why a load-bearing pillar was placed three feet to the left"
+  },
+  {
+    "run_id": "35970660236",
+    "created_at": "2026-09-24T07:43:14Z",
+    "lane_id": "decision_deadline",
+    "topic": "decisions need due dates too",
+    "domain": "decisions",
+    "bucket": "core",
+    "anchors": [
+      "A1",
+      "A5"
+    ],
+    "provocative": true,
+    "hook_style": "contrast",
+    "opening": "a task deadline and a decision deadline are completely different things, yet we treat them like synonyms ⏱️"
+  },
+  {
+    "run_id": "35970660236",
+    "created_at": "2026-09-24T07:43:14Z",
+    "lane_id": "assumptions_visible",
+    "topic": "assumptions are future arguments unless they are written down",
+    "domain": "assumptions_constraints",
+    "bucket": "core",
+    "anchors": [
+      "A1"
+    ],
+    "provocative": true,
+    "hook_style": "numberless_pattern",
+    "opening": "every project starts with a room full of people agreeing on things they never actually said out loud 💭"
+  },
+  {
+    "run_id": "35970660236",
+    "created_at": "2026-09-24T07:43:14Z",
+    "lane_id": "portfolio_dependencies",
+    "topic": "projects compete and depend on each other even when their plans do not show it",
+    "domain": "portfolio",
+    "bucket": "core",
+    "anchors": [
+      "A2",
+      "A9"
+    ],
+    "provocative": false,
+    "hook_style": "tiny_list",
+    "opening": "shared senior developers. the same compliance officer. a single staging environment 🛠️"
+  },
+  {
+    "run_id": "35970660236",
+    "created_at": "2026-09-24T07:43:14Z",
+    "lane_id": "deescalation",
+    "topic": "de-escalation starts with separating facts, constraints and preferences",
+    "domain": "conflict",
+    "bucket": "core",
+    "anchors": [
+      "A3",
+      "A12"
+    ],
+    "provocative": false,
+    "hook_style": "symptom",
+    "opening": "when a project review meeting turns into a heated debate about button colors or database schemas, the problem is rarely technical ⚖️"
   }
 ]
