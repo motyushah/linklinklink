@@ -929,5 +929,61 @@
     "provocative": false,
     "hook_style": "rule_of_thumb",
     "opening": "treat quality as a system property, not a final department you visit before shipping 🛠️"
+  },
+  {
+    "run_id": "36130999130",
+    "created_at": "2026-09-25T11:49:07Z",
+    "lane_id": "qa_early",
+    "topic": "quality thinking before the final test cycle",
+    "domain": "engineering",
+    "bucket": "adjacent",
+    "anchors": [
+      "A6"
+    ],
+    "provocative": true,
+    "hook_style": "anti_template",
+    "opening": "we spend half our sprints treating quality like a final inspection at the end of an assembly line 🛠️"
+  },
+  {
+    "run_id": "36130999130",
+    "created_at": "2026-09-25T11:49:07Z",
+    "lane_id": "risk_retire",
+    "topic": "keeping risk lists useful instead of accumulating museum exhibits",
+    "domain": "",
+    "bucket": "",
+    "anchors": [
+      "A1"
+    ],
+    "provocative": true,
+    "hook_style": "direct_claim",
+    "opening": "a risk register without an expiration date is just a cemetery of polite worries 📋"
+  },
+  {
+    "run_id": "36130999130",
+    "created_at": "2026-09-25T11:49:07Z",
+    "lane_id": "meeting_vs_async",
+    "topic": "when ambiguity deserves sync and when status does not",
+    "domain": "meetings",
+    "bucket": "core",
+    "anchors": [
+      "A3"
+    ],
+    "provocative": false,
+    "hook_style": "question",
+    "opening": "is a status meeting really the best place to resolve a deep architectural disagreement? ⏱️"
+  },
+  {
+    "run_id": "36130999130",
+    "created_at": "2026-09-25T11:49:07Z",
+    "lane_id": "priority_means_no",
+    "topic": "why ranking without consequence is theatre",
+    "domain": "prioritization",
+    "bucket": "core",
+    "anchors": [
+      "A2"
+    ],
+    "provocative": false,
+    "hook_style": "myth_without_label",
+    "opening": "priority labels are often used as a comforting substitute for making hard choices about team capacity 🧭"
   }
 ]
