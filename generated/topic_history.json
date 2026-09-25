@@ -870,5 +870,64 @@
     "provocative": false,
     "hook_style": "symptom",
     "opening": "when a project review meeting turns into a heated debate about button colors or database schemas, the problem is rarely technical ⚖️"
+  },
+  {
+    "run_id": "36128090189",
+    "created_at": "2026-09-25T11:16:09Z",
+    "lane_id": "budget_is_plan",
+    "topic": "a budget is another version of the project plan",
+    "domain": "budget_economics",
+    "bucket": "core",
+    "anchors": [
+      "A2",
+      "A5"
+    ],
+    "provocative": true,
+    "hook_style": "reframe",
+    "opening": "a budget is not an accounting report you inspect at the end of the quarter 💸"
+  },
+  {
+    "run_id": "36128090189",
+    "created_at": "2026-09-25T11:16:09Z",
+    "lane_id": "conflict_early",
+    "topic": "small disagreements are cheaper to resolve before they become positions",
+    "domain": "conflict",
+    "bucket": "core",
+    "anchors": [
+      "A1",
+      "A3"
+    ],
+    "provocative": true,
+    "hook_style": "decision",
+    "opening": "you have to choose whether to interrupt a polite meeting to address a minor technical contradiction, or let it slide until it hardens into an entrenched departmental position ⚖️"
+  },
+  {
+    "run_id": "36128090189",
+    "created_at": "2026-09-25T11:16:09Z",
+    "lane_id": "raci_limits",
+    "topic": "a matrix cannot rescue a team that avoids decisions",
+    "domain": "roles_governance",
+    "bucket": "core",
+    "anchors": [
+      "A1",
+      "A8"
+    ],
+    "provocative": false,
+    "hook_style": "one_sentence_story",
+    "opening": "three departments reviewed the specification, filled out every box in the governance matrix, and still nobody could authorize a simple button change 📋"
+  },
+  {
+    "run_id": "36128090189",
+    "created_at": "2026-09-25T11:16:09Z",
+    "lane_id": "quality_owner",
+    "topic": "quality cannot be thrown over the wall to QA",
+    "domain": "quality_acceptance",
+    "bucket": "core",
+    "anchors": [
+      "A6"
+    ],
+    "provocative": false,
+    "hook_style": "rule_of_thumb",
+    "opening": "treat quality as a system property, not a final department you visit before shipping 🛠️"
   }
 ]
